@@ -68,6 +68,7 @@ void CanStatusTranslatorNode::initForROS()
   }
   // setup subscriber
   sub1_ = nh_.subscribe("can_info", 100, &CanStatusTranslatorNode::callbackFromCanInfo, this);
+  sub2_ = nh_.subscribe("vehicle_status", 10, &CanStatusTranslatorNode::callbackFromVehicleStatus, this);
 
   // setup publisher
   pub1_ = nh_.advertise<geometry_msgs::TwistStamped>("can_velocity", 10);
