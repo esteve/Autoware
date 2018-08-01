@@ -116,7 +116,7 @@ void DecisionMakerNode::createShiftLane(void)
 {
   bool isRightShift = param_shift_width_ >= 0;
 
-  autoware_msgs::LaneArray shift_lanes = current_shifted_lane_array_ = current_based_lane_array_;
+  autoware_detection_msgs::LaneArray shift_lanes = current_shifted_lane_array_ = current_based_lane_array_;
   if (!current_shifted_lane_array_.lanes.empty())
   {
     size_t lane_idx = 0;
@@ -289,7 +289,7 @@ void DecisionMakerNode::changeVelocityLane(int dir)
   {
     for (auto& lane : current_controlled_lane_array_.lanes)
     {
-      autoware_msgs::Lane temp_lane = lane;
+      autoware_detection_msgs::Lane temp_lane = lane;
       for (size_t wpi = 1; wpi < lane.waypoints.size(); wpi++)
       {
         amathutils::point p0(temp_lane.waypoints.at(wpi).pose.pose.position.x,

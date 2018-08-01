@@ -31,14 +31,14 @@
 #ifndef VELOCITY_SET_PATH_H
 #define VELOCITY_SET_PATH_H
 
-#include <autoware_msgs/Lane.h>
+#include <autoware_detection_msgs/Lane.h>
 #include "waypoint_follower/libwaypoint_follower.h"
 class VelocitySetPath
 {
  private:
-  autoware_msgs::Lane prev_waypoints_;
-  autoware_msgs::Lane new_waypoints_;
-  autoware_msgs::Lane temporal_waypoints_;
+  autoware_detection_msgs::Lane prev_waypoints_;
+  autoware_detection_msgs::Lane new_waypoints_;
+  autoware_detection_msgs::Lane temporal_waypoints_;
   bool set_path_;
   double current_vel_;
 
@@ -61,22 +61,22 @@ class VelocitySetPath
   void resetFlag();
 
   // ROS Callbacks
-  void waypointsCallback(const autoware_msgs::LaneConstPtr& msg);
+  void waypointsCallback(const autoware_detection_msgs::LaneConstPtr& msg);
   void currentVelocityCallback(const geometry_msgs::TwistStampedConstPtr& msg);
 
   double calcInterval(const int begin, const int end) const;
 
-  autoware_msgs::Lane getPrevWaypoints() const
+  autoware_detection_msgs::Lane getPrevWaypoints() const
   {
     return prev_waypoints_;
   }
 
-  autoware_msgs::Lane getNewWaypoints() const
+  autoware_detection_msgs::Lane getNewWaypoints() const
   {
     return new_waypoints_;
   }
 
-  autoware_msgs::Lane getTemporalWaypoints() const
+  autoware_detection_msgs::Lane getTemporalWaypoints() const
   {
     return temporal_waypoints_;
   }

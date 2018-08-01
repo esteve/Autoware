@@ -4,8 +4,8 @@
 /* user header */
 #include "sensor_msgs/Image.h"
 #include "sensor_msgs/PointCloud2.h"
-#include "autoware_msgs/ImageObj.h"
-#include "autoware_msgs/PointsImage.h"
+#include "autoware_detection_msgs/ImageObj.h"
+#include "autoware_detection_msgs/PointsImage.h"
 
 /* ----mode---- */
 #define _REQ_PUB 1
@@ -283,7 +283,7 @@ bool publish() {
 }
 #endif
 
-void obj_person__image_obj_callback(const autoware_msgs::ImageObj::ConstPtr& image_obj_msg) {
+void obj_person__image_obj_callback(const autoware_detection_msgs::ImageObj::ConstPtr& image_obj_msg) {
     if (obj_person__image_obj_flag) {
         obj_person__image_obj_flag = false;
         obj_car__image_obj_flag = false;
@@ -310,7 +310,7 @@ void obj_person__image_obj_callback(const autoware_msgs::ImageObj::ConstPtr& ima
     }
 }
 
-void obj_car__image_obj_callback(const autoware_msgs::ImageObj::ConstPtr& image_obj_msg) {
+void obj_car__image_obj_callback(const autoware_detection_msgs::ImageObj::ConstPtr& image_obj_msg) {
     if (obj_car__image_obj_flag) {
         obj_person__image_obj_flag = false;
         obj_car__image_obj_flag = false;
@@ -337,7 +337,7 @@ void obj_car__image_obj_callback(const autoware_msgs::ImageObj::ConstPtr& image_
     }
 }
 
-void points_image_callback(const autoware_msgs::PointsImage::ConstPtr& points_image_msg) {
+void points_image_callback(const autoware_detection_msgs::PointsImage::ConstPtr& points_image_msg) {
     if (points_image_flag) {
         obj_person__image_obj_flag = false;
         obj_car__image_obj_flag = false;
@@ -364,7 +364,7 @@ void points_image_callback(const autoware_msgs::PointsImage::ConstPtr& points_im
     }
 }
 
-void vscan_image_callback(const autoware_msgs::PointsImage::ConstPtr& points_image_msg) {
+void vscan_image_callback(const autoware_detection_msgs::PointsImage::ConstPtr& points_image_msg) {
     if (vscan_image_flag) {
         obj_person__image_obj_flag = false;
         obj_car__image_obj_flag = false;

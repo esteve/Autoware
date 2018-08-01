@@ -38,9 +38,9 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 
-#include <autoware_msgs/ImageObj.h>
-#include <autoware_msgs/ImageObjRanged.h>
-#include <autoware_msgs/ImageObjTracked.h>
+#include <autoware_detection_msgs/ImageObj.h>
+#include <autoware_detection_msgs/ImageObjRanged.h>
+#include <autoware_detection_msgs/ImageObjTracked.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
@@ -87,7 +87,7 @@ class ROSTrackerApp {
   std::vector<float> min_heights_;
   std::vector<float> max_heights_;
 
-  autoware_msgs::ImageObjTracked ros_objects_msg_; // sync
+  autoware_detection_msgs::ImageObjTracked ros_objects_msg_; // sync
 
   void Sort(const std::vector<float> in_scores,
             std::vector<unsigned int> &in_out_indices) {
@@ -247,7 +247,7 @@ public:
 
     // copy results to ros msg
     unsigned int num = obj_trackers_.size();
-    std::vector<autoware_msgs::ImageRectRanged>
+    std::vector<autoware_detection_msgs::ImageRectRanged>
         rect_ranged_array;              // tracked rectangles
     std::vector<int> real_data(num, 0); // boolean array to show if data in
                                         // rect_ranged comes from tracking or
@@ -256,7 +256,7 @@ public:
     std::vector<unsigned int> lifespan(
         num, 0); // remaining lifespan of each rectranged
     for (i = 0; i < num; i++) {
-      autoware_msgs::ImageRectRanged rect_ranged;
+      autoware_detection_msgs::ImageRectRanged rect_ranged;
       LkTracker tracker_tmp = *obj_trackers_[i];
       rect_ranged.rect.x = tracker_tmp.GetTrackedObject().rect.x;
       rect_ranged.rect.y = tracker_tmp.GetTrackedObject().rect.y;
@@ -283,7 +283,7 @@ public:
     obj_detections_.clear();
     ranges_.clear();
 
-    autoware_msgs::ImageObjTracked tmp_objects_msg;
+    autoware_detection_msgs::ImageObjTracked tmp_objects_msg;
 
     tmp_objects_msg.type = tracked_type_;
     tmp_objects_msg.total_num = num;
@@ -311,14 +311,14 @@ public:
     publish_if_possible();
   }
 
-  void detections_callback(autoware_msgs::ImageObjRanged image_objects_msg) {
+  void detections_callback(autoware_detection_msgs::ImageObjRanged image_objects_msg) {
     // if(ready_)
     //	return;
     if (!detect_ready_) // must NOT overwrite, data is probably being used by
                         // tracking.
     {
       unsigned int num = image_objects_msg.obj.size();
-      std::vector<autoware_msgs::ImageRectRanged> objects =
+      std::vector<autoware_detection_msgs::ImageRectRanged> objects =
           image_objects_msg.obj;
       tracked_type_ = image_objects_msg.type;
       // points are X,Y,W,H and repeat for each instance
@@ -345,13 +345,13 @@ public:
     publish_if_possible();
     // ready_ = true;
   }
-  /*void detections_callback(autoware_msgs::ImageObj image_objects_msg)
+  /*void detections_callback(autoware_detection_msgs::ImageObj image_objects_msg)
   {
           if (ready_)
                   return;
           ready_ = false;
           unsigned int num = image_objects_msg.obj.size();
-          std::vector<autoware_msgs::ImageRect> objects =
+          std::vector<autoware_detection_msgs::ImageRect> objects =
   image_objects_msg.obj;
           //object_type = image_objects_msg.type;
           //points are X,Y,W,H and repeat for each instance
@@ -395,7 +395,7 @@ public:
     }
 
     publisher_tracked_objects_ =
-        node_handle_.advertise<autoware_msgs::ImageObjTracked>(
+        node_handle_.advertise<autoware_detection_msgs::ImageObjTracked>(
             "image_obj_tracked", 1);
 
     ROS_INFO("Subscribing to... %s", image_raw_topic_str.c_str());

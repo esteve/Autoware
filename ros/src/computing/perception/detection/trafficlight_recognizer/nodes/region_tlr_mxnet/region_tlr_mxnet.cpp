@@ -71,7 +71,7 @@ void RegionTLRMxNetROSNode::ImageRawCallback(const sensor_msgs::Image &image)
 
 }
 
-void RegionTLRMxNetROSNode::ROISignalCallback(const autoware_msgs::Signals::ConstPtr &extracted_pos)
+void RegionTLRMxNetROSNode::ROISignalCallback(const autoware_detection_msgs::Signals::ConstPtr &extracted_pos)
 {
 	static ros::Time previous_timestamp;
 	// If frame has not been prepared, abort this callback

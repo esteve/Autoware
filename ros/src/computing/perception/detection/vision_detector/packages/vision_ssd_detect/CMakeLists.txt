@@ -13,7 +13,7 @@ FIND_PACKAGE(catkin REQUIRED COMPONENTS
         roscpp
         sensor_msgs
         std_msgs
-        autoware_msgs
+        autoware_detection_msgs
         tf
         jsk_recognition_msgs
         )
@@ -27,7 +27,7 @@ catkin_package(
         roscpp
         sensor_msgs
         std_msgs
-        autoware_msgs
+        autoware_detection_msgs
         tf
         jsk_recognition_msgs
 )

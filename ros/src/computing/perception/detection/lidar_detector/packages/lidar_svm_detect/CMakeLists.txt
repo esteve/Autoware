@@ -5,7 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   autoware_build_flags
   roscpp
   sensor_msgs
-  autoware_msgs
+  autoware_detection_msgs
   tf
   jsk_recognition_msgs
   jsk_rviz_plugins
@@ -19,7 +19,7 @@ catkin_package(
   CATKIN_DEPENDS
   roscpp
   sensor_msgs
-  autoware_msgs
+  autoware_detection_msgs
   tf
   jsk_recognition_msgs
   jsk_rviz_plugins

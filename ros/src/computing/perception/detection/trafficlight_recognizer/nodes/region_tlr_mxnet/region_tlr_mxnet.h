@@ -70,7 +70,7 @@ public:
 
 	void ImageRawCallback(const sensor_msgs::Image &image);
 
-	void ROISignalCallback(const autoware_msgs::Signals::ConstPtr &extracted_pos);
+	void ROISignalCallback(const autoware_detection_msgs::Signals::ConstPtr &extracted_pos);
 
 	// The vector of data structure to save traffic light state, position, ...etc
 	std::vector<Context> contexts_;

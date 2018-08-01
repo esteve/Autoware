@@ -70,7 +70,7 @@ void RegionTLRSSDROSNode::ImageRawCallback(const sensor_msgs::Image &image) {
 // ==========================================
 // Callback function to acquire extracted_pos
 // ==========================================
-void RegionTLRSSDROSNode::ROISignalCallback(const autoware_msgs::Signals::ConstPtr &extracted_pos) {
+void RegionTLRSSDROSNode::ROISignalCallback(const autoware_detection_msgs::Signals::ConstPtr &extracted_pos) {
   static ros::Time previous_timestamp;
   // If frame has not been prepared, abort this callback
   if (frame_.empty() ||

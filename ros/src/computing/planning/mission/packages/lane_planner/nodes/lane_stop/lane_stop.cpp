@@ -32,7 +32,7 @@
 
 #include "autoware_config_msgs/ConfigLaneStop.h"
 #include "autoware_msgs/TrafficLight.h"
-#include "autoware_msgs/LaneArray.h"
+#include "autoware_detection_msgs/LaneArray.h"
 
 #include <lane_planner/lane_planner_vmap.hpp>
 
@@ -42,14 +42,14 @@ bool config_manual_detection = true;
 
 ros::Publisher traffic_pub;
 
-autoware_msgs::LaneArray current_red_lane;
-autoware_msgs::LaneArray current_green_lane;
+autoware_detection_msgs::LaneArray current_red_lane;
+autoware_detection_msgs::LaneArray current_green_lane;
 
-const autoware_msgs::LaneArray *previous_lane = &current_red_lane;
+const autoware_detection_msgs::LaneArray *previous_lane = &current_red_lane;
 
 void select_current_lane(const autoware_msgs::TrafficLight& msg)
 {
-	const autoware_msgs::LaneArray *current;
+	const autoware_detection_msgs::LaneArray *current;
 	switch (msg.traffic_light) {
 	case lane_planner::vmap::TRAFFIC_LIGHT_RED:
 		current = &current_red_lane;
@@ -87,12 +87,12 @@ void receive_manual_detection(const autoware_msgs::TrafficLight& msg)
 		select_current_lane(msg);
 }
 
-void cache_red_lane(const autoware_msgs::LaneArray& msg)
+void cache_red_lane(const autoware_detection_msgs::LaneArray& msg)
 {
 	current_red_lane = msg;
 }
 
-void cache_green_lane(const autoware_msgs::LaneArray& msg)
+void cache_green_lane(const autoware_detection_msgs::LaneArray& msg)
 {
 	current_green_lane = msg;
 }
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 	bool pub_waypoint_latch;
 	n.param<bool>("/lane_stop/pub_waypoint_latch", pub_waypoint_latch, true);
 
-	traffic_pub = n.advertise<autoware_msgs::LaneArray>("/traffic_waypoints_array", pub_waypoint_queue_size,
+	traffic_pub = n.advertise<autoware_detection_msgs::LaneArray>("/traffic_waypoints_array", pub_waypoint_queue_size,
 								pub_waypoint_latch);
 
 	ros::Subscriber light_sub = n.subscribe("/light_color", sub_light_queue_size, receive_auto_detection);

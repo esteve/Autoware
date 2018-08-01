@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         sensor_msgs
         std_msgs
-        autoware_msgs
+        autoware_detection_msgs
         autoware_config_msgs
         )
 
@@ -22,7 +22,7 @@ catkin_package(CATKIN_DEPENDS
         roscpp
         sensor_msgs
         std_msgs
-        autoware_msgs
+        autoware_detection_msgs
         autoware_config_msgs
         )
 

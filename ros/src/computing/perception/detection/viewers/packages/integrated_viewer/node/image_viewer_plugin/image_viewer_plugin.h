@@ -6,10 +6,10 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <rviz/panel.h>
-#include "autoware_msgs/ImageObj.h"
-#include "autoware_msgs/ImageObjRanged.h"
-#include "autoware_msgs/ImageObjTracked.h"
-#include "autoware_msgs/PointsImage.h"
+#include "autoware_detection_msgs/ImageObj.h"
+#include "autoware_detection_msgs/ImageObjRanged.h"
+#include "autoware_detection_msgs/ImageObjTracked.h"
+#include "autoware_detection_msgs/PointsImage.h"
 
 #include <string>
 #include <map>
@@ -20,7 +20,7 @@
 #include <QStringList>
 #include <QWidget>
 #include <QEvent>
-#include <autoware_msgs/DetectedObjectArray.h>
+#include <autoware_detection_msgs/DetectedObjectArray.h>
 
 #include "convert_image.h"
 #include "ui_image_viewer_form.h"
@@ -49,9 +49,9 @@ namespace integrated_viewer
 
     // The Callback functions
     void ImageCallback(const sensor_msgs::Image::ConstPtr& msg);
-    void DetectedObjCallback(const autoware_msgs::DetectedObjectArray::ConstPtr &msg);
-    void PointCallback(const autoware_msgs::PointsImage::ConstPtr &msg);
-    void LaneCallback(const autoware_msgs::ImageLaneObjects::ConstPtr& msg);
+    void DetectedObjCallback(const autoware_detection_msgs::DetectedObjectArray::ConstPtr &msg);
+    void PointCallback(const autoware_detection_msgs::PointsImage::ConstPtr &msg);
+    void LaneCallback(const autoware_detection_msgs::ImageLaneObjects::ConstPtr& msg);
 
    // The function to refrect modified image on UI
    void ShowImageOnUi(void);
@@ -87,9 +87,9 @@ namespace integrated_viewer
     cv::Mat default_image_;
 
     // Data pointer to hold subscribed data
-    autoware_msgs::PointsImage::ConstPtr points_msg_;
-    autoware_msgs::DetectedObjectArray::ConstPtr detected_objects_msg_;
-    autoware_msgs::ImageLaneObjects::ConstPtr lane_msg_;
+    autoware_detection_msgs::PointsImage::ConstPtr points_msg_;
+    autoware_detection_msgs::DetectedObjectArray::ConstPtr detected_objects_msg_;
+    autoware_detection_msgs::ImageLaneObjects::ConstPtr lane_msg_;
 
     // The helper-class constructor for drawing
     DrawRects rects_drawer_;

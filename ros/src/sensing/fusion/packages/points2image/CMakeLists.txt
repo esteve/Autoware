@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         std_msgs
         sensor_msgs
-        autoware_msgs
+        autoware_detection_msgs
         rosinterface
         fastvirtualscan
         cv_bridge
@@ -35,7 +35,7 @@ catkin_package(
         CATKIN_DEPENDS roscpp
         std_msgs
         sensor_msgs
-        autoware_msgs
+        autoware_detection_msgs
         rosinterface
         fastvirtualscan
         cv_bridge

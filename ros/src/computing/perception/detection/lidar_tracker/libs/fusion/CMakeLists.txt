@@ -5,14 +5,14 @@ find_package(catkin REQUIRED COMPONENTS
         autoware_build_flags
         roscpp
         cv_bridge
-        autoware_msgs
+        autoware_detection_msgs
         )
 find_package(OpenCV REQUIRED)
 
 catkin_package(
         INCLUDE_DIRS include
         LIBRARIES fusion
-        CATKIN_DEPENDS roscpp autoware_msgs cv_bridge
+        CATKIN_DEPENDS roscpp autoware_detection_msgs cv_bridge
 )
 
 SET(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")

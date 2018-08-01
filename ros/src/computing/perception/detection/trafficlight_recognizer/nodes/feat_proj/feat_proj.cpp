@@ -20,11 +20,11 @@
 #include <cstdio>
 #include "libvectormap/Math.h"
 #include <Eigen/Eigen>
-#include <autoware_msgs/Signals.h>
+#include <autoware_detection_msgs/Signals.h>
 #include <autoware_msgs/AdjustXY.h>
 #include <vector_map/vector_map.h>
 #include <vector_map_server/GetSignal.h>
-#include <autoware_msgs/Lane.h>
+#include <autoware_detection_msgs/Lane.h>
 
 static std::string camera_id_str;
 
@@ -65,7 +65,7 @@ namespace
 	{
 	private:
 		geometry_msgs::PoseStamped pose_;
-		autoware_msgs::Lane waypoints_;
+		autoware_detection_msgs::Lane waypoints_;
 
 	public:
 		VectorMapClient()
@@ -81,7 +81,7 @@ namespace
 			return pose_;
 		}
 
-		autoware_msgs::Lane waypoints() const
+		autoware_detection_msgs::Lane waypoints() const
 		{
 			return waypoints_;
 		}
@@ -91,7 +91,7 @@ namespace
 			pose_ = pose;
 		}
 
-		void set_waypoints(const autoware_msgs::Lane &waypoints)
+		void set_waypoints(const autoware_detection_msgs::Lane &waypoints)
 		{
 			waypoints_ = waypoints;
 		}
@@ -274,7 +274,7 @@ double GetSignalAngleInCameraSystem(double hang, double vang)
 void echoSignals2(ros::Publisher &pub, bool useOpenGLCoord = false)
 {
 	int countPoint = 0;
-	autoware_msgs::Signals signalsInFrame;
+	autoware_detection_msgs::Signals signalsInFrame;
 
 	/* Get signals on the path if vecter_map_server is enabled */
 	if (g_use_vector_map_server)
@@ -328,7 +328,7 @@ void echoSignals2(ros::Publisher &pub, bool useOpenGLCoord = false)
 			project2(signalcenterx, ux, vx, useOpenGLCoord);
 			radius = (int) distance(ux, vx, u, v);
 
-			autoware_msgs::ExtractedPosition sign;
+			autoware_detection_msgs::ExtractedPosition sign;
 			sign.signalId = signal.id;
 
 			sign.u = u + adjust_proj_x; // shift project position by configuration value from runtime manager
@@ -447,7 +447,7 @@ int main(int argc, char *argv[])
 		g_ros_client = rosnode.serviceClient<vector_map_server::GetSignal>("vector_map_server/get_signal");
 	}
 
-	ros::Publisher signalPublisher = rosnode.advertise<autoware_msgs::Signals>("roi_signal", 100);
+	ros::Publisher signalPublisher = rosnode.advertise<autoware_detection_msgs::Signals>("roi_signal", 100);
 	signal(SIGINT, interrupt);
 
 	Rate loop(50);

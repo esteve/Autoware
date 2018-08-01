@@ -6,14 +6,14 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   nav_msgs
   visualization_msgs
-  autoware_msgs
+  autoware_detection_msgs
   tf
 )
 
 set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
 
 catkin_package(
-  CATKIN_DEPENDS autoware_msgs
+  CATKIN_DEPENDS autoware_detection_msgs
 )
 
 include_directories(

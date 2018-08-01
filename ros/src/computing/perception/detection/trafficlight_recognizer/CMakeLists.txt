@@ -10,7 +10,7 @@ set(ROS_VERSION $ENV{ROS_DISTRO})
 
 find_package(catkin REQUIRED COMPONENTS
         autoware_build_flags
-        autoware_msgs
+        autoware_detection_msgs
         cmake_modules
         cv_bridge
         geometry_msgs
@@ -61,7 +61,7 @@ include_directories(
 catkin_package(
         INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS}
         CATKIN_DEPENDS
-        autoware_msgs
+        autoware_detection_msgs
         cmake_modules
         cv_bridge
         geometry_msgs

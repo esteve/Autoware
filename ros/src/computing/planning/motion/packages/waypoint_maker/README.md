@@ -110,7 +110,7 @@
 
 1. Published Topics
 
-    - /lane_waypoints_array (autoware_msgs/LaneArray)
+    - /lane_waypoints_array (autoware_detection_msgs/LaneArray)
 
 1. Parameters
 

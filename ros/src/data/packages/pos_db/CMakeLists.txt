@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
         jsk_recognition_msgs
         tf
         jsk_rviz_plugins
-        autoware_msgs
+        autoware_detection_msgs
         )
 
 include(FindLibSsh2.cmake)
@@ -21,7 +21,7 @@ catkin_package(
         gnss
         jsk_recognition_msgs
         tf
-        autoware_msgs
+        autoware_detection_msgs
 )
 
 if (LIBSSH2_FOUND)

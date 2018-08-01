@@ -100,7 +100,7 @@ OpenPlannerCarSimulator::OpenPlannerCarSimulator()
 	pub_PointerBehaviorStateRviz	= nh.advertise<visualization_msgs::Marker>(str_s2.str(), 1);
 	pub_InternalInfoRviz			= nh.advertise<visualization_msgs::MarkerArray>(str_s7.str(), 1);
 
-	pub_CurrentLocalPath 			= nh.advertise<autoware_msgs::Lane>(str_s8.str(), 1);
+	pub_CurrentLocalPath 			= nh.advertise<autoware_detection_msgs::Lane>(str_s8.str(), 1);
 
 	sub_joystick = nh.subscribe("/joy", 		1, &OpenPlannerCarSimulator::callbackGetJoyStickInfo, 		this);
 	sub_StepSignal = nh.subscribe("/simu_step_signal", 		1, &OpenPlannerCarSimulator::callbackGetStepForwardSignals, 		this);
@@ -288,7 +288,7 @@ void OpenPlannerCarSimulator::callbackGetJoyStickInfo(const sensor_msgs::JoyCons
 	std::cout << "Steering " << m_JoyDesiredStatus.steer << ", Speed: " <<  m_JoyDesiredStatus.speed <<", acceleration " << acceleration<< ", Braking " << braking <<", MaxSpeed: " << m_CarInfo.max_speed_forward << std::endl;
 }
 
-void OpenPlannerCarSimulator::callbackGetCloudClusters(const autoware_msgs::CloudClusterArrayConstPtr& msg)
+void OpenPlannerCarSimulator::callbackGetCloudClusters(const autoware_detection_msgs::CloudClusterArrayConstPtr& msg)
 {
 	sensor_msgs::PointCloud2 others_cloud;
 	for(unsigned int i=0; i < msg->clusters.size(); i++)
@@ -392,7 +392,7 @@ void OpenPlannerCarSimulator::GetTransformFromTF(const std::string parent_frame,
 	}
 }
 
-void OpenPlannerCarSimulator::callbackGetPredictedObjects(const autoware_msgs::DetectedObjectArrayConstPtr& msg)
+void OpenPlannerCarSimulator::callbackGetPredictedObjects(const autoware_detection_msgs::DetectedObjectArrayConstPtr& msg)
 {
 	m_PredictedObjects.clear();
 	bPredictedObjects = true;
@@ -506,7 +506,7 @@ void OpenPlannerCarSimulator::visualizePath(const std::vector<PlannerHNS::WayPoi
 	pub_LocalTrajectoriesRviz.publish(markerArray);
 }
 
-void OpenPlannerCarSimulator::callbackGetTrafficLightSignals(const autoware_msgs::Signals& msg)
+void OpenPlannerCarSimulator::callbackGetTrafficLightSignals(const autoware_detection_msgs::Signals& msg)
 {
 //	std::cout << "Received Traffic Light Signals : " << msg.Signals.size() << std::endl;
 //	m_CurrTrafficLight.clear();
@@ -1011,7 +1011,7 @@ void OpenPlannerCarSimulator::MainLoop()
 
 			if(m_SimParams.bEnableLogs)
 			{
-				autoware_msgs::Lane lane;
+				autoware_detection_msgs::Lane lane;
 				PlannerHNS::ROSHelpers::ConvertFromLocalLaneToAutowareLane(m_LocalPlanner->m_Path, lane);
 				lane.lane_id = m_SimParams.id;
 				lane.lane_index = (int)m_CurrBehavior.state;

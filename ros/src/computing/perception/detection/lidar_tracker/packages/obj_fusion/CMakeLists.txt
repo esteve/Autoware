@@ -4,7 +4,7 @@ project(obj_fusion)
 find_package(catkin REQUIRED COMPONENTS
   autoware_build_flags
   roscpp
-  autoware_msgs
+  autoware_detection_msgs
   tf
   jsk_recognition_msgs
   vector_map
@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
 catkin_package(
   CATKIN_DEPENDS 
   roscpp
-  autoware_msgs
+  autoware_detection_msgs
   tf
   jsk_recognition_msgs
   vector_map

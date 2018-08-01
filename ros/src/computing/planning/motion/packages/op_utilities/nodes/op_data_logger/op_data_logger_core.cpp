@@ -136,7 +136,7 @@ void OpenPlannerDataLogger::callbackGetSimuPose(const geometry_msgs::PoseArray& 
 	}
 }
 
-void OpenPlannerDataLogger::callbackGetSimuCarsPathAndState(const autoware_msgs::LaneConstPtr& msg )
+void OpenPlannerDataLogger::callbackGetSimuCarsPathAndState(const autoware_detection_msgs::LaneConstPtr& msg )
 {
 	//std::cout << "Receive Lane Data ... " << std::endl;
 
@@ -155,7 +155,7 @@ void OpenPlannerDataLogger::callbackGetSimuCarsPathAndState(const autoware_msgs:
 
 //Functions related to Ego Vehicle Data
 
-void OpenPlannerDataLogger::callbackGetPredictedObjects(const autoware_msgs::DetectedObjectArrayConstPtr& msg)
+void OpenPlannerDataLogger::callbackGetPredictedObjects(const autoware_detection_msgs::DetectedObjectArrayConstPtr& msg)
 {
 	m_PredictedObjects.clear();
 	PlannerHNS::DetectedObject obj;

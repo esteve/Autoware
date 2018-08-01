@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         sensor_msgs
         std_msgs
-        autoware_msgs
+        autoware_detection_msgs
         )
 
 find_package(OpenCV REQUIRED)
@@ -17,7 +17,7 @@ find_package(OpenCV REQUIRED)
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-        CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs autoware_msgs
+        CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs autoware_detection_msgs
         INCLUDE_DIRS include
         LIBRARIES kf_lib
 )

@@ -56,8 +56,8 @@ BehaviorGen::BehaviorGen()
 	m_OriginPos.position.y  = transform.getOrigin().y();
 	m_OriginPos.position.z  = transform.getOrigin().z();
 
-	pub_LocalPath = nh.advertise<autoware_msgs::Lane>("final_waypoints", 1,true);
-	pub_LocalBasePath = nh.advertise<autoware_msgs::Lane>("base_waypoints", 1,true);
+	pub_LocalPath = nh.advertise<autoware_detection_msgs::Lane>("final_waypoints", 1,true);
+	pub_LocalBasePath = nh.advertise<autoware_detection_msgs::Lane>("base_waypoints", 1,true);
 	pub_ClosestIndex = nh.advertise<std_msgs::Int32>("closest_waypoint", 1,true);
 	pub_BehaviorState = nh.advertise<geometry_msgs::TwistStamped>("current_behavior", 1);
 	pub_SimuBoxPose	  = nh.advertise<geometry_msgs::PoseArray>("sim_box_pose_ego", 1);
@@ -232,7 +232,7 @@ void BehaviorGen::callbackGetRobotOdom(const nav_msgs::OdometryConstPtr& msg)
 	bVehicleStatus = true;
 }
 
-void BehaviorGen::callbackGetGlobalPlannerPath(const autoware_msgs::LaneArrayConstPtr& msg)
+void BehaviorGen::callbackGetGlobalPlannerPath(const autoware_detection_msgs::LaneArrayConstPtr& msg)
 {
 	if(msg->lanes.size() > 0 && bMap)
 	{
@@ -307,7 +307,7 @@ void BehaviorGen::callbackGetGlobalPlannerPath(const autoware_msgs::LaneArrayCon
 	}
 }
 
-void BehaviorGen::callbackGetLocalTrajectoryCost(const autoware_msgs::LaneConstPtr& msg)
+void BehaviorGen::callbackGetLocalTrajectoryCost(const autoware_detection_msgs::LaneConstPtr& msg)
 {
 	bBestCost = true;
 	m_TrajectoryBestCost.bBlocked = msg->is_blocked;
@@ -317,7 +317,7 @@ void BehaviorGen::callbackGetLocalTrajectoryCost(const autoware_msgs::LaneConstP
 	m_TrajectoryBestCost.closest_obj_velocity = msg->closest_object_velocity;
 }
 
-void BehaviorGen::callbackGetLocalPlannerPath(const autoware_msgs::LaneArrayConstPtr& msg)
+void BehaviorGen::callbackGetLocalPlannerPath(const autoware_detection_msgs::LaneArrayConstPtr& msg)
 {
 	if(msg->lanes.size() > 0)
 	{
@@ -366,7 +366,7 @@ void BehaviorGen::callbackGetTrafficLightStatus(const autoware_msgs::TrafficLigh
 		m_CurrLightStatus = PlannerHNS::RED_LIGHT;
 }
 
-void BehaviorGen::callbackGetTrafficLightSignals(const autoware_msgs::Signals& msg)
+void BehaviorGen::callbackGetTrafficLightSignals(const autoware_detection_msgs::Signals& msg)
 {
 	bNewLightSignal = true;
 	std::vector<PlannerHNS::TrafficLight> simulatedLights;

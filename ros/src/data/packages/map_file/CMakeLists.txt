@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf2_geometry_msgs
   vector_map
-  autoware_msgs
+  autoware_detection_msgs
 )
 
 find_package(PCL REQUIRED COMPONENTS io)

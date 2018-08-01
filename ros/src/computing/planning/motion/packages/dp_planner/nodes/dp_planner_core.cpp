@@ -102,8 +102,8 @@ PlannerX::PlannerX()
 		pub_EnableLattice = nh.advertise<std_msgs::Int32>("enableLattice", 1);
 	}
 
-	pub_LocalPath = nh.advertise<autoware_msgs::Lane>(topic_prefix + "/final_waypoints", 100,true);
-	pub_LocalBasePath = nh.advertise<autoware_msgs::Lane>(topic_prefix + "/base_waypoints", 100,true);
+	pub_LocalPath = nh.advertise<autoware_detection_msgs::Lane>(topic_prefix + "/final_waypoints", 100,true);
+	pub_LocalBasePath = nh.advertise<autoware_detection_msgs::Lane>(topic_prefix + "/base_waypoints", 100,true);
 	pub_ClosestIndex = nh.advertise<std_msgs::Int32>(topic_prefix + "/closest_waypoint", 100,true);
 
 	pub_BehaviorState = nh.advertise<geometry_msgs::TwistStamped>("current_behavior", 1);
@@ -307,7 +307,7 @@ void PlannerX::callbackGetRvizPoint(const geometry_msgs::PointStampedConstPtr& m
 	point.point.y = msg->point.y+m_OriginPos.position.y;
 	point.point.z = msg->point.z+m_OriginPos.position.z;
 
-	autoware_msgs::CloudClusterArray clusters_array;
+	autoware_detection_msgs::CloudClusterArray clusters_array;
 	clusters_array.clusters.push_back(GenerateSimulatedObstacleCluster(width, length, height, 50, point));
 	m_OriginalClusters.clear();
 	int nNum1, nNum2;
@@ -365,9 +365,9 @@ void PlannerX::callbackGetCurrentPose(const geometry_msgs::PoseStampedConstPtr& 
 	bInitPos = true;
 }
 
-autoware_msgs::CloudCluster PlannerX::GenerateSimulatedObstacleCluster(const double& x_rand, const double& y_rand, const double& z_rand, const int& nPoints, const geometry_msgs::PointStamped& centerPose)
+autoware_detection_msgs::CloudCluster PlannerX::GenerateSimulatedObstacleCluster(const double& x_rand, const double& y_rand, const double& z_rand, const int& nPoints, const geometry_msgs::PointStamped& centerPose)
 {
-	autoware_msgs::CloudCluster cluster;
+	autoware_detection_msgs::CloudCluster cluster;
 	cluster.centroid_point.point = centerPose.point;
 	cluster.dimensions.x = x_rand;
 	cluster.dimensions.y = y_rand;
@@ -399,7 +399,7 @@ autoware_msgs::CloudCluster PlannerX::GenerateSimulatedObstacleCluster(const dou
 	return cluster;
 }
 
-void PlannerX::callbackGetCloudClusters(const autoware_msgs::CloudClusterArrayConstPtr& msg)
+void PlannerX::callbackGetCloudClusters(const autoware_detection_msgs::CloudClusterArrayConstPtr& msg)
 {
 	timespec timerTemp;
 	UtilityHNS::UtilityH::GetTickCount(timerTemp);
@@ -498,7 +498,7 @@ void PlannerX::callbackGetOutsideControl(const std_msgs::Int8& msg)
 	m_bOutsideControl  = msg.data;
 }
 
-void PlannerX::callbackGetAStarPath(const autoware_msgs::LaneArrayConstPtr& msg)
+void PlannerX::callbackGetAStarPath(const autoware_detection_msgs::LaneArrayConstPtr& msg)
 {
 	if(msg->lanes.size() > 0)
 	{
@@ -521,7 +521,7 @@ void PlannerX::callbackGetAStarPath(const autoware_msgs::LaneArrayConstPtr& msg)
 	}
 }
 
-void PlannerX::callbackGetWayPlannerPath(const autoware_msgs::LaneArrayConstPtr& msg)
+void PlannerX::callbackGetWayPlannerPath(const autoware_detection_msgs::LaneArrayConstPtr& msg)
 {
 	if(msg->lanes.size() > 0)
 	{
@@ -759,7 +759,7 @@ void PlannerX::PlannerMainLoop()
 		}
 
 
-		autoware_msgs::Lane current_trajectory;
+		autoware_detection_msgs::Lane current_trajectory;
 		std_msgs::Int32 closest_waypoint;
 		PlannerHNS::RelativeInfo info;
 		PlannerHNS::PlanningHelpers::GetRelativeInfo(m_LocalPlanner.m_Path, m_LocalPlanner.state, info);

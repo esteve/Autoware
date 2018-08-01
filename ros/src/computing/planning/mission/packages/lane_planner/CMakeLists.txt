@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
         waypoint_follower
         vector_map
         gnss
-        autoware_msgs
+        autoware_detection_msgs
         )
 
 set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
@@ -23,7 +23,7 @@ catkin_package(
         waypoint_follower
         vector_map
         gnss
-        autoware_msgs
+        autoware_detection_msgs
 )
 
 include_directories(

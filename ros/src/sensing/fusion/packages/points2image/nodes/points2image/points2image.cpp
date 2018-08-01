@@ -31,7 +31,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/CameraInfo.h>
-#include "autoware_msgs/PointsImage.h"
+#include "autoware_detection_msgs/PointsImage.h"
 #include "autoware_msgs/ProjectionMatrix.h"
 //#include "autoware_msgs/CameraExtrinsic.h"
 
@@ -94,7 +94,7 @@ static void callback(const sensor_msgs::PointCloud2ConstPtr& msg)
     return;
   }
 
-  autoware_msgs::PointsImage pub_msg = pointcloud2_to_image(msg, cameraExtrinsicMat, cameraMat, distCoeff, imageSize);
+  autoware_detection_msgs::PointsImage pub_msg = pointcloud2_to_image(msg, cameraExtrinsicMat, cameraMat, distCoeff, imageSize);
   pub.publish(pub_msg);
 }
 
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
   }
 
   ROS_INFO("[points2image]Publishing to... %s", pub_topic_str.c_str());
-  pub = n.advertise<autoware_msgs::PointsImage>(pub_topic_str, 10);
+  pub = n.advertise<autoware_detection_msgs::PointsImage>(pub_topic_str, 10);
 
   ros::Subscriber sub = n.subscribe(points_topic, 1, callback);
 

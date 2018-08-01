@@ -47,10 +47,10 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float32.h>
 
-#include <autoware_msgs/Signals.h>
-#include <autoware_msgs/ExtractedPosition.h>
-#include <autoware_msgs/DetectedObjectArray.h>
-#include <autoware_msgs/Lane.h>
+#include <autoware_detection_msgs/Signals.h>
+#include <autoware_detection_msgs/ExtractedPosition.h>
+#include <autoware_detection_msgs/DetectedObjectArray.h>
+#include <autoware_detection_msgs/Lane.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseArray.h>
 #include "op_planner/RoadNetwork.h"
@@ -98,8 +98,8 @@ protected:
 	std::vector<std::vector<std::string> >  m_LogData;
 
 	void callbackGetSimuPose(const geometry_msgs::PoseArray &msg);
-	void callbackGetPredictedObjects(const autoware_msgs::DetectedObjectArrayConstPtr& msg);
-	void callbackGetSimuCarsPathAndState(const autoware_msgs::LaneConstPtr& msg);
+	void callbackGetPredictedObjects(const autoware_detection_msgs::DetectedObjectArrayConstPtr& msg);
+	void callbackGetSimuCarsPathAndState(const autoware_detection_msgs::LaneConstPtr& msg);
 	void callbackGetBehaviorState(const geometry_msgs::TwistStampedConstPtr& msg );
 	PlannerHNS::BehaviorState ConvertBehaviorStateFromAutowareToPlannerH(const geometry_msgs::TwistStampedConstPtr& msg);
 	PlannerHNS::STATE_TYPE GetStateFromNumber(const int& iBehState);

@@ -42,9 +42,9 @@
 #include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
-#include <autoware_msgs/PointsImage.h>
+#include <autoware_detection_msgs/PointsImage.h>
 
-#include "autoware_msgs/ImageObjRanged.h"
+#include "autoware_detection_msgs/ImageObjRanged.h"
 #include <vector>
 #include <iostream>
 #include <math.h>
@@ -56,15 +56,15 @@ static char window_name[] = "points_image_d_viewer";
 static bool existImage = false;
 static bool existPoints = false;
 static sensor_msgs::Image image_msg;
-static autoware_msgs::PointsImageConstPtr points_msg;
+static autoware_detection_msgs::PointsImageConstPtr points_msg;
 static cv::Mat colormap;
 
 #if 0
 static std::vector<cv::Rect> cars;
 static std::vector<cv::Rect> peds;
 #else
-static autoware_msgs::ImageObjRanged car_fused_objects;
-static autoware_msgs::ImageObjRanged pedestrian_fused_objects;
+static autoware_detection_msgs::ImageObjRanged car_fused_objects;
+static autoware_detection_msgs::ImageObjRanged pedestrian_fused_objects;
 #endif
 
 /* check whether floating value x is nearly 0 or not */
@@ -83,7 +83,7 @@ static std::vector<cv::Scalar> _colors;
 static const int OBJ_RECT_THICKNESS = 3;
 
 static void drawRects(IplImage *Image,
-                      std::vector<autoware_msgs::ImageRectRanged> objects,
+                      std::vector<autoware_detection_msgs::ImageRectRanged> objects,
                       CvScalar color,
                       int threshold_height)
 {
@@ -98,7 +98,7 @@ static void drawRects(IplImage *Image,
 }
 
 static void putDistance(IplImage *Image,
-                        std::vector<autoware_msgs::ImageRectRanged> objects,
+                        std::vector<autoware_detection_msgs::ImageRectRanged> objects,
                         int threshold_height,
                         const char* objectLabel)
 {
@@ -283,7 +283,7 @@ static void car_updater_callback(dpm::ImageObjects image_objects_msg)
   }
 }
 #else
-static void car_updater_callback(const autoware_msgs::ImageObjRanged& fused_car_msg)
+static void car_updater_callback(const autoware_detection_msgs::ImageObjRanged& fused_car_msg)
 {
   car_fused_objects = fused_car_msg;
   //  show();
@@ -308,7 +308,7 @@ static void ped_updater_callback(dpm::ImageObjects image_objects_msg)
   }
 }
 #else
-static void ped_updater_callback(const autoware_msgs::ImageObjRanged& fused_pds_msg)
+static void ped_updater_callback(const autoware_detection_msgs::ImageObjRanged& fused_pds_msg)
 {
   pedestrian_fused_objects = fused_pds_msg;
   //  show();
@@ -322,7 +322,7 @@ static void image_cb(const sensor_msgs::Image& msg)
   show();
 }
 
-static void points_cb(const autoware_msgs::PointsImageConstPtr& msg)
+static void points_cb(const autoware_detection_msgs::PointsImageConstPtr& msg)
 {
   points_msg = msg;
   existPoints = true;

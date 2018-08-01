@@ -68,7 +68,7 @@ OpenPlannerSimulatorSigns::OpenPlannerSimulatorSigns()
 
 	for(unsigned int i = 0; i < m_Params.firstSignsIds.size(); i++)
 	{
-		autoware_msgs::ExtractedPosition s;
+		autoware_detection_msgs::ExtractedPosition s;
 		s.signalId = m_Params.firstSignsIds.at(i);
 		s.type = 1;
 		m_FirstSignals.Signals.push_back(s);
@@ -76,7 +76,7 @@ OpenPlannerSimulatorSigns::OpenPlannerSimulatorSigns()
 
 	for(unsigned int i=0; i < m_Params.secondSignsIds.size(); i++)
 	{
-		autoware_msgs::ExtractedPosition s;
+		autoware_detection_msgs::ExtractedPosition s;
 		s.signalId = m_Params.secondSignsIds.at(i);
 		s.type = 0;
 		m_SecondSignals.Signals.push_back(s);
@@ -85,7 +85,7 @@ OpenPlannerSimulatorSigns::OpenPlannerSimulatorSigns()
 
 	pub_TrafficLightsRviz = nh.advertise<visualization_msgs::MarkerArray>("op_traffic_lights_rviz", 1);
 
-	pub_trafficLights 	= nh.advertise<autoware_msgs::Signals>("roi_signal",1);
+	pub_trafficLights 	= nh.advertise<autoware_detection_msgs::Signals>("roi_signal",1);
 
 	UtilityHNS::UtilityH::GetTickCount(m_Timer);
 	m_CurrLightState = PlannerHNS::GREEN_LIGHT;
@@ -115,7 +115,7 @@ OpenPlannerSimulatorSigns::~OpenPlannerSimulatorSigns()
 {
 }
 
-void OpenPlannerSimulatorSigns::VisualizeTrafficLight(autoware_msgs::Signals& _signals)
+void OpenPlannerSimulatorSigns::VisualizeTrafficLight(autoware_detection_msgs::Signals& _signals)
 {
 	std::vector<PlannerHNS::TrafficLight> simulatedLights;
 	for(unsigned int i = 0 ; i < _signals.Signals.size() ; i++)
@@ -273,7 +273,7 @@ void OpenPlannerSimulatorSigns::MainLoop()
 			}
 		}
 
-		autoware_msgs::Signals all_signals;
+		autoware_detection_msgs::Signals all_signals;
 		all_signals.Signals.insert(all_signals.Signals.end(), m_FirstSignals.Signals.begin(), m_FirstSignals.Signals.end());
 		all_signals.Signals.insert(all_signals.Signals.end(), m_SecondSignals.Signals.begin(), m_SecondSignals.Signals.end());
 

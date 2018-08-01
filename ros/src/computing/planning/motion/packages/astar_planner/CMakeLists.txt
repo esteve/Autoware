@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   tf
   waypoint_follower
-  autoware_msgs 
+  autoware_detection_msgs 
   vector_map
 )
 
@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS roscpp std_msgs tf waypoint_follower autoware_msgs vector_map
+  CATKIN_DEPENDS roscpp std_msgs tf waypoint_follower autoware_detection_msgs vector_map
 )
 
 ###########

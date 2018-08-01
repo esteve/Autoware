@@ -7,7 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
   autoware_build_flags
   roscpp
   geometry_msgs
-  autoware_can_msgs
+  autoware_can_msgs  
+  autoware_detection_msgs  
   map_file
   pcl_conversions
   pcl_ros
@@ -35,12 +36,13 @@ catkin_package(
   roscpp
   geometry_msgs
   autoware_can_msgs
+  autoware_detection_msgs
   map_file
   op_utility
   op_planner
   op_simu
   op_ros_helpers
-  waypoint_follower
+  waypoint_follower 
 #  DEPENDS system_lib
 )
 

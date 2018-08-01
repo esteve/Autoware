@@ -10,7 +10,7 @@ FIND_PACKAGE(catkin REQUIRED COMPONENTS
         cv_bridge
         roscpp
         sensor_msgs
-        autoware_msgs
+        autoware_detection_msgs
         )
 
 FIND_PACKAGE(OpenCV REQUIRED)
@@ -20,7 +20,7 @@ catkin_package(
         cv_bridge
         roscpp
         sensor_msgs
-        autoware_msgs
+        autoware_detection_msgs
 )
 ###########
 ## Build ##

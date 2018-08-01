@@ -91,8 +91,8 @@ public:
                 const std::vector<int>& in_cluster_indices, std_msgs::Header in_ros_header, int in_id, int in_r,
                 int in_g, int in_b, std::string in_label, bool in_estimate_pose);
 
-  /* \brief Returns the autoware_msgs::CloudCluster message associated to this Cluster */
-  void ToROSMessage(std_msgs::Header in_ros_header, autoware_msgs::CloudCluster& out_cluster_message);
+  /* \brief Returns the autoware_detection_msgs::CloudCluster message associated to this Cluster */
+  void ToROSMessage(std_msgs::Header in_ros_header, autoware_detection_msgs::CloudCluster& out_cluster_message);
 
   Cluster();
   virtual ~Cluster();

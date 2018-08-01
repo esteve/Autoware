@@ -58,8 +58,8 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float32.h>
 
-#include <autoware_msgs/Signals.h>
-#include <autoware_msgs/ExtractedPosition.h>
+#include <autoware_detection_msgs/Signals.h>
+#include <autoware_detection_msgs/ExtractedPosition.h>
 #include <geometry_msgs/PoseArray.h>
 #include <op_planner/RoadNetwork.h>
 #include <op_planner/MappingHelpers.h>
@@ -112,8 +112,8 @@ public:
 class OpenPlannerSimulatorSigns
 {
 public:
-	autoware_msgs::Signals m_FirstSignals;
-	autoware_msgs::Signals m_SecondSignals;
+	autoware_detection_msgs::Signals m_FirstSignals;
+	autoware_detection_msgs::Signals m_SecondSignals;
 
 protected:
 	ros::NodeHandle nh;
@@ -131,7 +131,7 @@ protected:
 	ros::Publisher pub_TrafficLightsRviz;
 	ros::Publisher pub_trafficLights;
 
-	void VisualizeTrafficLight(autoware_msgs::Signals& _signals);
+	void VisualizeTrafficLight(autoware_detection_msgs::Signals& _signals);
 
 public:
 	OpenPlannerSimulatorSigns();

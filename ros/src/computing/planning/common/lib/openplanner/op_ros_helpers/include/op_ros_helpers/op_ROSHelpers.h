@@ -33,11 +33,11 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
-#include "autoware_msgs/CloudClusterArray.h"
-#include "autoware_msgs/DetectedObjectArray.h"
+#include "autoware_detection_msgs/CloudClusterArray.h"
+#include "autoware_detection_msgs/DetectedObjectArray.h"
 
 #include "waypoint_follower/libwaypoint_follower.h"
-#include "autoware_msgs/LaneArray.h"
+#include "autoware_detection_msgs/LaneArray.h"
 
 #include <visualization_msgs/MarkerArray.h>
 
@@ -176,7 +176,7 @@ public:
 	static void GetTransformFromTF(const std::string parent_frame, const std::string child_frame, tf::StampedTransform &transform);
 
 	static void ConvertFromAutowareCloudClusterObstaclesToPlannerH(const PlannerHNS::WayPoint& currState, const double& car_width,
-			const double& car_length, const autoware_msgs::CloudClusterArray& clusters,
+			const double& car_length, const autoware_detection_msgs::CloudClusterArray& clusters,
 			std::vector<PlannerHNS::DetectedObject>& impObstacles, const double max_obj_size, const double& min_obj_size, const double& detection_radius,
 			const int& n_poly_quarters,const double& poly_resolution, int& nOriginalPoints, int& nContourPoints);
 
@@ -230,7 +230,7 @@ public:
 	static void ConvertParticles(std::vector<PlannerHNS::WayPoint>& points, visualization_msgs::MarkerArray& part_mkrs, visualization_msgs::MarkerArray& part_markers_d);
 
 	static void ConvertFromPlannerHToAutowarePathFormat(const std::vector<PlannerHNS::WayPoint>& path, const int& iStart,
-				autoware_msgs::Lane & trajectory);
+				autoware_detection_msgs::Lane & trajectory);
 
 	static void ConvertFromPlannerHRectangleToAutowareRviz(const std::vector<PlannerHNS::GPSPoint>& safety_rect,
 			visualization_msgs::Marker& marker);
@@ -249,23 +249,23 @@ public:
 	static void ConvertFromPlannerObstaclesToAutoware(const PlannerHNS::WayPoint& currState, const std::vector<PlannerHNS::DetectedObject>& trackedObstacles,
 			visualization_msgs::MarkerArray& detectedPolygons);
 
-	static void ConvertFromLocalLaneToAutowareLane(const std::vector<PlannerHNS::WayPoint>& path, autoware_msgs::Lane& trajectory , const unsigned int& iStart = 0);
+	static void ConvertFromLocalLaneToAutowareLane(const std::vector<PlannerHNS::WayPoint>& path, autoware_detection_msgs::Lane& trajectory , const unsigned int& iStart = 0);
 
-	static void ConvertFromLocalLaneToAutowareLane(const std::vector<PlannerHNS::GPSPoint>& path, autoware_msgs::Lane& trajectory);
+	static void ConvertFromLocalLaneToAutowareLane(const std::vector<PlannerHNS::GPSPoint>& path, autoware_detection_msgs::Lane& trajectory);
 
-	static void ConvertFromAutowareLaneToLocalLane(const autoware_msgs::Lane& trajectory, std::vector<PlannerHNS::WayPoint>& path);
+	static void ConvertFromAutowareLaneToLocalLane(const autoware_detection_msgs::Lane& trajectory, std::vector<PlannerHNS::WayPoint>& path);
 
-	static void createGlobalLaneArrayMarker(std_msgs::ColorRGBA color, const autoware_msgs::LaneArray &lane_waypoints_array, visualization_msgs::MarkerArray& markerArray);
+	static void createGlobalLaneArrayMarker(std_msgs::ColorRGBA color, const autoware_detection_msgs::LaneArray &lane_waypoints_array, visualization_msgs::MarkerArray& markerArray);
 
-	static void createGlobalLaneArrayVelocityMarker(const autoware_msgs::LaneArray &lane_waypoints_array , visualization_msgs::MarkerArray& markerArray);
+	static void createGlobalLaneArrayVelocityMarker(const autoware_detection_msgs::LaneArray &lane_waypoints_array , visualization_msgs::MarkerArray& markerArray);
 
-	static void createGlobalLaneArrayOrientationMarker(const autoware_msgs::LaneArray &lane_waypoints_array , visualization_msgs::MarkerArray& markerArray);
+	static void createGlobalLaneArrayOrientationMarker(const autoware_detection_msgs::LaneArray &lane_waypoints_array , visualization_msgs::MarkerArray& markerArray);
 
 	static void GetTrafficLightForVisualization(std::vector<PlannerHNS::TrafficLight>& lights, visualization_msgs::MarkerArray& markerArray);
 
-	static void ConvertFromAutowareDetectedObjectToOpenPlannerDetectedObject(const autoware_msgs::DetectedObject& det_obj, PlannerHNS::DetectedObject& obj);
+	static void ConvertFromAutowareDetectedObjectToOpenPlannerDetectedObject(const autoware_detection_msgs::DetectedObject& det_obj, PlannerHNS::DetectedObject& obj);
 
-	static void ConvertFromOpenPlannerDetectedObjectToAutowareDetectedObject(const PlannerHNS::DetectedObject& det_obj, const bool& bSimulationMode, autoware_msgs::DetectedObject& obj);
+	static void ConvertFromOpenPlannerDetectedObjectToAutowareDetectedObject(const PlannerHNS::DetectedObject& det_obj, const bool& bSimulationMode, autoware_detection_msgs::DetectedObject& obj);
 
 	static PlannerHNS::SHIFT_POS ConvertShiftFromAutowareToPlannerH(const PlannerHNS::AUTOWARE_SHIFT_POS& shift);
 

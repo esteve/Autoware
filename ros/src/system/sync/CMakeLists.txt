@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
-  autoware_msgs
+  autoware_detection_msgs
   lidar_tracker
   geometry_msgs
   visualization_msgs
@@ -23,7 +23,7 @@ find_package(OpenCV REQUIRED)
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS autoware_msgs points2image message_runtime std_msgs
+  CATKIN_DEPENDS autoware_detection_msgs points2image message_runtime std_msgs
 )
 ###########
 ## Build ##

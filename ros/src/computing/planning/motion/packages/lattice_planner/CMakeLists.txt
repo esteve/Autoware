@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
         vector_map
         astar_planner
         autoware_can_msgs
+        autoware_detection_msgs
         )
 
 find_package(Armadillo REQUIRED)
@@ -42,6 +43,7 @@ catkin_package(
         vector_map
         astar_planner
         autoware_can_msgs
+        autoware_detection_msgs
 )
 
 SET(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")

@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
         geometry_msgs
         std_msgs
         sensor_msgs
-        autoware_msgs
+        autoware_detection_msgs
         tf
         jsk_recognition_msgs
         jsk_rviz_plugins
@@ -30,7 +30,7 @@ catkin_package(
         geometry_msgs
         std_msgs
         sensor_msgs
-        autoware_msgs
+        autoware_detection_msgs
         tf
         jsk_recognition_msgs
         jsk_rviz_plugins

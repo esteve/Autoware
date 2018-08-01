@@ -38,7 +38,7 @@
 
 #include <vector_map/vector_map.h>
 #include "autoware_config_msgs/ConfigLaneRule.h"
-#include "autoware_msgs/LaneArray.h"
+#include "autoware_detection_msgs/LaneArray.h"
 
 #include <lane_planner/lane_planner_vmap.hpp>
 
@@ -66,7 +66,7 @@ lane_planner::vmap::VectorMap lane_vmap;
 double curve_radius_min;
 double crossroad_radius_min;
 double clothoid_radius_min;
-autoware_msgs::LaneArray cached_waypoint;
+autoware_detection_msgs::LaneArray cached_waypoint;
 
 #ifdef DEBUG
 visualization_msgs::Marker debug_marker;
@@ -74,12 +74,12 @@ ros::Publisher marker_pub;
 int marker_cnt;
 #endif // DEBUG
 
-autoware_msgs::Lane create_new_lane(const autoware_msgs::Lane& lane, const std_msgs::Header& header)
+autoware_detection_msgs::Lane create_new_lane(const autoware_detection_msgs::Lane& lane, const std_msgs::Header& header)
 {
-	autoware_msgs::Lane l = lane;
+	autoware_detection_msgs::Lane l = lane;
 	l.header = header;
 
-	for (autoware_msgs::Waypoint& w : l.waypoints) {
+	for (autoware_detection_msgs::Waypoint& w : l.waypoints) {
 		w.pose.header = header;
 		w.twist.header = header;
 	}
@@ -87,10 +87,10 @@ autoware_msgs::Lane create_new_lane(const autoware_msgs::Lane& lane, const std_m
 	return l;
 }
 
-autoware_msgs::Lane apply_acceleration(const autoware_msgs::Lane& lane, double acceleration,
+autoware_detection_msgs::Lane apply_acceleration(const autoware_detection_msgs::Lane& lane, double acceleration,
 					   size_t start_index, size_t fixed_cnt, double fixed_vel)
 {
-	autoware_msgs::Lane l = lane;
+	autoware_detection_msgs::Lane l = lane;
 
 	if (fixed_cnt == 0)
 		return l;
@@ -117,9 +117,9 @@ autoware_msgs::Lane apply_acceleration(const autoware_msgs::Lane& lane, double a
 	return l;
 }
 
-autoware_msgs::Lane apply_crossroad_acceleration(const autoware_msgs::Lane& lane, double acceleration)
+autoware_detection_msgs::Lane apply_crossroad_acceleration(const autoware_detection_msgs::Lane& lane, double acceleration)
 {
-	autoware_msgs::Lane l = lane;
+	autoware_detection_msgs::Lane l = lane;
 
 	bool crossroad = false;
 	std::vector<size_t> start_indexes;
@@ -163,11 +163,11 @@ autoware_msgs::Lane apply_crossroad_acceleration(const autoware_msgs::Lane& lane
 	return l;
 }
 
-autoware_msgs::Lane apply_stopline_acceleration(const autoware_msgs::Lane& lane, double acceleration,
+autoware_detection_msgs::Lane apply_stopline_acceleration(const autoware_detection_msgs::Lane& lane, double acceleration,
 						    const lane_planner::vmap::VectorMap& fine_vmap, size_t ahead_cnt,
 						    size_t behind_cnt)
 {
-	autoware_msgs::Lane l = lane;
+	autoware_detection_msgs::Lane l = lane;
 
 	std::vector<size_t> indexes;
 	for (size_t i = 0; i < fine_vmap.stoplines.size(); ++i) {
@@ -226,7 +226,7 @@ std::vector<vector_map::Point> create_stop_points(const lane_planner::vmap::Vect
 }
 
 std::vector<size_t> create_stop_indexes(const lane_planner::vmap::VectorMap& vmap,
-					const autoware_msgs::Lane& lane, double stopline_search_radius)
+					const autoware_detection_msgs::Lane& lane, double stopline_search_radius)
 {
 	std::vector<size_t> stop_indexes;
 	for (const vector_map::Point& p : create_stop_points(vmap)) {
@@ -250,10 +250,10 @@ std::vector<size_t> create_stop_indexes(const lane_planner::vmap::VectorMap& vma
 	return stop_indexes;
 }
 
-autoware_msgs::Lane apply_stopline_acceleration(const autoware_msgs::Lane& lane, double acceleration,
+autoware_detection_msgs::Lane apply_stopline_acceleration(const autoware_detection_msgs::Lane& lane, double acceleration,
 						    double stopline_search_radius, size_t ahead_cnt, size_t behind_cnt)
 {
-	autoware_msgs::Lane l = lane;
+	autoware_detection_msgs::Lane l = lane;
 
 	std::vector<size_t> indexes = create_stop_indexes(lane_vmap, l, stopline_search_radius);
 	if (indexes.empty())
@@ -277,7 +277,7 @@ autoware_msgs::Lane apply_stopline_acceleration(const autoware_msgs::Lane& lane,
 	return l;
 }
 
-bool is_fine_vmap(const lane_planner::vmap::VectorMap& fine_vmap, const autoware_msgs::Lane& lane)
+bool is_fine_vmap(const lane_planner::vmap::VectorMap& fine_vmap, const autoware_detection_msgs::Lane& lane)
 {
 	if (fine_vmap.points.size() != lane.waypoints.size())
 		return false;
@@ -367,7 +367,7 @@ std_msgs::ColorRGBA create_color(int index)
 }
 #endif // DEBUG
 
-void create_waypoint(const autoware_msgs::LaneArray& msg)
+void create_waypoint(const autoware_detection_msgs::LaneArray& msg)
 {
 	std_msgs::Header header;
 	header.stamp = ros::Time::now();
@@ -375,7 +375,7 @@ void create_waypoint(const autoware_msgs::LaneArray& msg)
 
 	cached_waypoint.lanes.clear();
 	cached_waypoint.lanes.shrink_to_fit();
-	for (const autoware_msgs::Lane& l : msg.lanes)
+	for (const autoware_detection_msgs::Lane& l : msg.lanes)
 		cached_waypoint.lanes.push_back(create_new_lane(l, header));
 	if (all_vmap.points.empty() || all_vmap.lanes.empty() || all_vmap.nodes.empty() ||
 	    all_vmap.stoplines.empty() || all_vmap.dtlanes.empty()) {
@@ -387,11 +387,11 @@ void create_waypoint(const autoware_msgs::LaneArray& msg)
 	marker_cnt = msg.lanes.size();
 #endif // DEBUG
 
-	autoware_msgs::LaneArray traffic_waypoint;
-	autoware_msgs::LaneArray red_waypoint;
-	autoware_msgs::LaneArray green_waypoint;
+	autoware_detection_msgs::LaneArray traffic_waypoint;
+	autoware_detection_msgs::LaneArray red_waypoint;
+	autoware_detection_msgs::LaneArray green_waypoint;
 	for (size_t i = 0; i < msg.lanes.size(); ++i) {
-		autoware_msgs::Lane lane = create_new_lane(msg.lanes[i], header);
+		autoware_detection_msgs::Lane lane = create_new_lane(msg.lanes[i], header);
 
 		lane_planner::vmap::VectorMap coarse_vmap =
 			lane_planner::vmap::create_coarse_vmap_from_lane(lane);
@@ -423,7 +423,7 @@ void create_waypoint(const autoware_msgs::LaneArray& msg)
 
 		/* velocity smoothing */
 		for(int k = 0; k < config_number_of_smoothing_count; ++k){
-			autoware_msgs::Lane temp_lane = lane;
+			autoware_detection_msgs::Lane temp_lane = lane;
 			if(lane.waypoints.size() >= 3){
 				for (size_t j = 1; j < lane.waypoints.size()-1; ++j) {
 					if(lane.waypoints.at(j).twist.twist.linear.x != 0)
@@ -506,7 +506,7 @@ void update_values()
 #endif // DEBUG
 
 	if (!cached_waypoint.lanes.empty()) {
-		autoware_msgs::LaneArray update_waypoint = cached_waypoint;
+		autoware_detection_msgs::LaneArray update_waypoint = cached_waypoint;
 		create_waypoint(update_waypoint);
 	}
 }
@@ -550,7 +550,7 @@ void config_parameter(const autoware_config_msgs::ConfigLaneRule& msg)
 	config_number_of_smoothing_count = msg.number_of_smoothing_count;
 
 	if (!cached_waypoint.lanes.empty()) {
-		autoware_msgs::LaneArray update_waypoint = cached_waypoint;
+		autoware_detection_msgs::LaneArray update_waypoint = cached_waypoint;
 		create_waypoint(update_waypoint);
 	}
 }
@@ -587,11 +587,11 @@ int main(int argc, char **argv)
 	n.param<double>("/lane_rule/clothoid_weight", clothoid_weight, 0.215);
 	n.param<std::string>("/lane_rule/frame_id", frame_id, "map");
 
-	traffic_pub = n.advertise<autoware_msgs::LaneArray>("/traffic_waypoints_array", pub_waypoint_queue_size,
+	traffic_pub = n.advertise<autoware_detection_msgs::LaneArray>("/traffic_waypoints_array", pub_waypoint_queue_size,
 								pub_waypoint_latch);
-	red_pub = n.advertise<autoware_msgs::LaneArray>("/red_waypoints_array", pub_waypoint_queue_size,
+	red_pub = n.advertise<autoware_detection_msgs::LaneArray>("/red_waypoints_array", pub_waypoint_queue_size,
 							    pub_waypoint_latch);
-	green_pub = n.advertise<autoware_msgs::LaneArray>("/green_waypoints_array", pub_waypoint_queue_size,
+	green_pub = n.advertise<autoware_detection_msgs::LaneArray>("/green_waypoints_array", pub_waypoint_queue_size,
 							      pub_waypoint_latch);
 
 #ifdef DEBUG

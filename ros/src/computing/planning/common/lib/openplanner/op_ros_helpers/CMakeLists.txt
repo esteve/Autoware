@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
         autoware_build_flags
         roscpp
         geometry_msgs
-        autoware_msgs
+        autoware_detection_msgs
         map_file
         pcl_conversions
         pcl_ros
@@ -25,7 +25,7 @@ catkin_package(
         LIBRARIES op_ros_helpers
         CATKIN_DEPENDS roscpp
         geometry_msgs
-        autoware_msgs
+        autoware_detection_msgs
         map_file
         pcl_conversions
         pcl_ros

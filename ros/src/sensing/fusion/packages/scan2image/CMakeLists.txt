@@ -7,12 +7,12 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         sensor_msgs
         std_msgs
-        autoware_msgs
+        autoware_detection_msgs
         )
 find_package(OpenCV REQUIRED)
 
 catkin_package(
-        CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs autoware_msgs message_runtime
+        CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs autoware_detection_msgs message_runtime
 )
 
 

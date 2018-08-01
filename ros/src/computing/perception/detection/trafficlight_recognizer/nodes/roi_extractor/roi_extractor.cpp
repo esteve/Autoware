@@ -27,7 +27,7 @@ void ROIExtractor::ImageRawCallback(const sensor_msgs::Image &image) {
 } // void ROIExtractor::ImageRawCallback()
 
 
-void ROIExtractor::ROISignalCallback(const autoware_msgs::Signals::ConstPtr &extracted_pos) {
+void ROIExtractor::ROISignalCallback(const autoware_detection_msgs::Signals::ConstPtr &extracted_pos) {
   // If frame image has not been updated, do nothing
   if (frame_timestamp_ == previous_timestamp_) {
     return;

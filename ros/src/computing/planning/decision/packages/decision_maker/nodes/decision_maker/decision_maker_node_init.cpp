@@ -16,7 +16,7 @@
 //#include <vector_map/vector_map.h>
 
 #include <autoware_msgs/LampCmd.h>
-#include <autoware_msgs/Lane.h>
+#include <autoware_detection_msgs/Lane.h>
 #include <autoware_msgs/State.h>
 #include <jsk_recognition_msgs/BoundingBoxArray.h>
 #include <random>
@@ -59,7 +59,7 @@ void DecisionMakerNode::initROS(int argc, char **argv)
 
   // for controlling other planner
   Pubs["state"] = nh_.advertise<std_msgs::String>("state", 1);
-  Pubs["lane_waypoints_array"] = nh_.advertise<autoware_msgs::LaneArray>(TPNAME_CONTROL_LANE_WAYPOINTS_ARRAY, 10, true);
+  Pubs["lane_waypoints_array"] = nh_.advertise<autoware_detection_msgs::LaneArray>(TPNAME_CONTROL_LANE_WAYPOINTS_ARRAY, 10, true);
   Pubs["states"] = nh_.advertise<autoware_msgs::State>("/decisionmaker/states", 1, true);
   Pubs["light_color"] = nh_.advertise<autoware_msgs::TrafficLight>("/light_color_managed", 1);
 

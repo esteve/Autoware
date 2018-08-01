@@ -66,10 +66,10 @@ static void set_default_param(DPMTTICParam& param)
 	param.num_cells = 8;counter =0;
 }
 
-static void result_to_image_obj_message(autoware_msgs::ImageObj& msg, const DPMTTICResult result)
+static void result_to_image_obj_message(autoware_detection_msgs::ImageObj& msg, const DPMTTICResult result)
 {
 	for (int i = 0; i < result.num; ++i) {
-		autoware_msgs::ImageRect rect;
+		autoware_detection_msgs::ImageRect rect;
 
 		int base = i * 4;
 		rect.x = result.corner_points[base];
@@ -89,7 +89,7 @@ static void image_raw_cb(const sensor_msgs::Image& image_source)
 	IplImage img = cv_image->image;
 	IplImage *img_ptr = &img;
 
-	autoware_msgs::ImageObj msg;
+	autoware_detection_msgs::ImageObj msg;
 	msg.header = image_source.header;
 	msg.type = object_class;
 
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
 #endif
 
 	ros::Subscriber sub = n.subscribe(image_topic_name, 1, image_raw_cb);
-	image_obj_pub = n.advertise<autoware_msgs::ImageObj>("image_obj", 1);
+	image_obj_pub = n.advertise<autoware_detection_msgs::ImageObj>("image_obj", 1);
 
 	ros::Subscriber config_sub;
 	std::string config_topic("/config");

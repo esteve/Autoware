@@ -13,7 +13,7 @@
 #include <algorithm>
 #include "scan2image.h"
 
-#include "autoware_msgs/ScanImage.h"
+#include "autoware_detection_msgs/ScanImage.h"
 #include "autoware_msgs/ProjectionMatrix.h"
 #include <sensor_msgs/CameraInfo.h>
 
@@ -202,7 +202,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
     /*
      * Create message(Topic)
      */
-    autoware_msgs::ScanImage scan_image_msg;
+    autoware_detection_msgs::ScanImage scan_image_msg;
     scan_image_msg.header = msg->header;
     scan_image_msg.distance.assign(scan_image.distance, scan_image.distance + imageSize.width * imageSize.height);
     scan_image_msg.intensity.assign(scan_image.intensity, scan_image.intensity + imageSize.width * imageSize.height);
@@ -232,7 +232,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub = n.subscribe("scan", 1, scanCallback);
     ros::Subscriber projection_sub = n.subscribe("projection_matrix", 1, projection_callback);
     ros::Subscriber intrinsic_sub = n.subscribe("camera/camera_info", 1, intrinsic_callback);
-    transformed_point_data = n.advertise<autoware_msgs::ScanImage>("scan_image", 1);
+    transformed_point_data = n.advertise<autoware_detection_msgs::ScanImage>("scan_image", 1);
 
     ros::spin();
 
