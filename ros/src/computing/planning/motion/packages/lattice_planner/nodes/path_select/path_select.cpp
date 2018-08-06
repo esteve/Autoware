@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "path_select");
 
     ros::NodeHandle nh;
-    ros::Subscriber twist_sub = nh.subscribe("temporal_waypoints", 1, callback);
+    ros::Subscriber twist_sub_ = nh.subscribe("temporal_waypoints", 1, callback);
     _pub = nh.advertise<autoware_msgs::lane>("final_waypoints", 1000,true);
 
     ros::spin();
