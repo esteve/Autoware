@@ -44,7 +44,7 @@ catkin_package(
         autoware_msgs
 )
 
-SET(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra -Wpedantic ${CMAKE_CXX_FLAGS}")
+SET(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra -Wpedantic -Werror ${CMAKE_CXX_FLAGS}")
 
 include_directories(
         include

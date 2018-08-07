@@ -241,6 +241,8 @@ union State TrajectoryGenerator::responseToControlInputs(union State veh, union 
 
 double TrajectoryGenerator::getCurvatureCommand(union Spline curvature, double dt, double v, double t)
 {
+  UNUSED(dt);
+
   // Local variables for curvature constants
   double kappa_0 = curvature.data.kappa_0;
   double kappa_1 = curvature.data.kappa_1;
@@ -301,6 +303,7 @@ double TrajectoryGenerator::getCurvatureCommand(union Spline curvature, double d
 
 double TrajectoryGenerator::getVelocityCommand(double v_goal, double v)
 {
+  UNUSED(v);
 #ifdef DEBUG
   std::cout << "Function: getVelocityCommand()" << std::endl;
 #endif

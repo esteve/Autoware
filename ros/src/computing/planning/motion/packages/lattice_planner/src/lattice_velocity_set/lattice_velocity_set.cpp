@@ -61,8 +61,10 @@ namespace planner
 {
 namespace lattice
 {
-bool VelocitySet::PathVset::checkWaypoint(VelocitySet* velocity_set, int num, const char* name) const
+bool VelocitySet::PathVset::checkWaypoint(int num, const char* name) const
 {
+  UNUSED(name);
+
   if (num < 0 || num >= getSize())
   {
     return false;
@@ -107,7 +109,7 @@ void VelocitySet::PathVset::setDeceleration(VelocitySet* velocity_set)
 
   for (int i = 0; i < velocity_change_range; i++)
   {
-    if (!checkWaypoint(velocity_set, velocity_set->closest_waypoint_ + i, "setDeceleration"))
+    if (!checkWaypoint(velocity_set->closest_waypoint_ + i, "setDeceleration"))
       continue;
     double waypoint_velocity = current_waypoints_.waypoints[velocity_set->closest_waypoint_ + i].twist.twist.linear.x;
     double changed_vel = temp1 - temp2;
@@ -138,7 +140,7 @@ void VelocitySet::PathVset::avoidSuddenAceleration(VelocitySet* velocity_set)
 
   for (int i = 0;; i++)
   {
-    if (!checkWaypoint(velocity_set, velocity_set->closest_waypoint_ + i, "avoidSuddenAceleration"))
+    if (!checkWaypoint(velocity_set->closest_waypoint_ + i, "avoidSuddenAceleration"))
       return;
     changed_vel = sqrt(temp1 + temp2 * (double)(i + 1)) + velocity_offset;
     if (changed_vel > current_waypoints_.waypoints[velocity_set->closest_waypoint_ + i].twist.twist.linear.x)
@@ -161,7 +163,7 @@ void VelocitySet::PathVset::avoidSuddenBraking(VelocitySet* velocity_set)
 
   for (int j = -1; j < examin_range; j++)
   {
-    if (!checkWaypoint(velocity_set, velocity_set->closest_waypoint_ + j, "avoidSuddenBraking"))
+    if (!checkWaypoint(velocity_set->closest_waypoint_ + j, "avoidSuddenBraking"))
       return;
     if (getWaypointVelocityMPS(velocity_set->closest_waypoint_ + j) <
         velocity_set->current_vel_ - velocity_set->velocity_change_limit_)  // we must change
@@ -174,7 +176,7 @@ void VelocitySet::PathVset::avoidSuddenBraking(VelocitySet* velocity_set)
   // fill in waypoints velocity behind vehicle
   for (num = velocity_set->closest_waypoint_ - 1; fill_in_vel > 0; fill_in_vel--)
   {
-    if (!checkWaypoint(velocity_set, num - fill_in_vel, "avoidSuddenBraking"))
+    if (!checkWaypoint(num - fill_in_vel, "avoidSuddenBraking"))
       continue;
     current_waypoints_.waypoints[num - fill_in_vel].twist.twist.linear.x = velocity_set->current_vel_;
   }
@@ -187,7 +189,7 @@ void VelocitySet::PathVset::avoidSuddenBraking(VelocitySet* velocity_set)
   {
     if (num >= getSize())
       return;
-    if (!checkWaypoint(velocity_set, num, "avoidSuddenBraking"))
+    if (!checkWaypoint(num, "avoidSuddenBraking"))
       continue;
     changed_vel = temp1 - temp2 * (double)i;  // sqrt(v^2 - 2*a*x)
     if (changed_vel <= 0)
@@ -199,7 +201,7 @@ void VelocitySet::PathVset::avoidSuddenBraking(VelocitySet* velocity_set)
 
   for (int j = 0; j < fill_in_zero; j++)
   {
-    if (!checkWaypoint(velocity_set, num + j, "avoidSuddenBraking"))
+    if (!checkWaypoint(num + j, "avoidSuddenBraking"))
       continue;
     current_waypoints_.waypoints[num + j].twist.twist.linear.x = 0.0;
   }
@@ -218,7 +220,7 @@ void VelocitySet::PathVset::changeWaypoints(VelocitySet* velocity_set, int stop_
   // change waypoints to decelerate
   for (int num = stop_waypoint; num > velocity_set->closest_waypoint_ - close_waypoint_threshold; num--)
   {
-    if (!checkWaypoint(velocity_set, num, "changeWaypoints"))
+    if (!checkWaypoint(num, "changeWaypoints"))
       continue;
 
     changed_vel = sqrt(2.0 * velocity_set->decel_ * (interval * i));  // sqrt(2*a*x)
@@ -239,7 +241,7 @@ void VelocitySet::PathVset::changeWaypoints(VelocitySet* velocity_set, int stop_
   // fill in 0
   for (int j = 1; j < fill_in_zero; j++)
   {
-    if (!checkWaypoint(velocity_set, stop_waypoint + j, "changeWaypoints"))
+    if (!checkWaypoint(stop_waypoint + j, "changeWaypoints"))
       continue;
     current_waypoints_.waypoints[stop_waypoint + j].twist.twist.linear.x = 0.0;
   }
@@ -277,6 +279,7 @@ void VelocitySet::baseWaypointCallback(const autoware_msgs::laneConstPtr& msg)
 
 void VelocitySet::objPoseCallback(const visualization_msgs::MarkerConstPtr& msg)
 {
+  UNUSED(msg);
   // ROS_INFO("subscribed obj_pose\n");
 }
 

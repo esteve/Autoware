@@ -154,6 +154,8 @@ static void WayPointCallback(const autoware_msgs::laneConstPtr& msg)
 */
 static double getLookAheadThreshold(int waypoint)
 {
+  UNUSED(waypoint);
+
   if (g_param_flag)
     return g_lookahead_threshold;
 
@@ -317,6 +319,9 @@ static union autoware::planner::lattice::State computeWaypointGoal(int next_wayp
 /////////////////////////////////////////////////////////////////
 static union autoware::planner::lattice::State computeVeh(int old_time, double old_theta, int next_waypoint)
 {
+  UNUSED(old_time);
+  UNUSED(old_theta);
+
   union autoware::planner::lattice::State l_veh;
 
   // Goal is computed relative to vehicle coordinate frame
@@ -376,6 +381,8 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
                                                                    union autoware::planner::lattice::Spline curvature,
                                                                    int next_waypoint)
 {
+  UNUSED(next_waypoint);
+
   curvature.data.success = true;
   bool convergence = false;
   int iteration = 0;

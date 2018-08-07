@@ -31,6 +31,8 @@
 #ifndef LATTICE_VELOCITY_SET_HPP
 #define LATTICE_VELOCITY_SET_HPP
 
+#define UNUSED(x) (void)(x)
+
 #include "libvelocity_set.h"
 #include "autoware_msgs/ConfigLatticeVelocitySet.h"
 #include "waypoint_follower/libwaypoint_follower.h"
@@ -59,7 +61,7 @@ class VelocitySet
     //===============================
 
     // check if waypoint number is valid
-    bool checkWaypoint(VelocitySet* velocity_set, int num, const char* name) const;
+    bool checkWaypoint(int num, const char* name) const;
     void setTemporalWaypoints(VelocitySet* velocity_set);
     autoware_msgs::lane getTemporalWaypoints() const
     {

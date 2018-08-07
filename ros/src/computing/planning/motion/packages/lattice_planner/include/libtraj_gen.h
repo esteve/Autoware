@@ -59,6 +59,8 @@
 //#define QUINTIC_STABLE
 //#define FIRST ORDER
 
+#define UNUSED(x) (void)(x)
+
 namespace autoware
 {
 namespace planner
@@ -127,6 +129,14 @@ union Command
 
 class TrajectoryGenerator
 {
+  // ------------LOG FILES----------//
+  // Open files for data logging
+  std::ofstream fmm_sx_;
+  std::ofstream fmm_sy_;
+  std::ofstream fmm_v_;
+  std::ofstream fmm_theta_;
+  std::ofstream fmm_kappa_;
+
 public:
   // ------------CONSTANTS----------//
   // Constants for forward simulation of ego vehicle
@@ -190,18 +200,7 @@ public:
 
   // static constexpr double STEP_SIZE = 0.05;
 
-private:
-  // ------------LOG FILES----------//
-  // Open files for data logging
-  std::ofstream fmm_sx_;
-  std::ofstream fmm_sy_;
-  std::ofstream fmm_v_;
-  std::ofstream fmm_theta_;
-  std::ofstream fmm_kappa_;
-
   // ------------FUNCTION DECLARATIONS----------//
-
-public:
   // initParams is used to generate the initial guess for the trajectory
   union Spline initParams(union State veh, union State goal);
 
@@ -212,6 +211,16 @@ public:
 
   // checkConvergence determines if the current final state is close enough to the goal state
   bool checkConvergence(union State veh_next, union State goal);
+
+  // generateCorrection inverts the Jacobian and updates the spline parameters
+  union Spline generateCorrection(union State veh, union State veh_next, union State goal, union Spline curvature,
+                                  double dt, double horizon);
+
+  // nextState is used by the robot to compute commands once an adequate set of parameters has been found
+  union State nextState(union State veh, union Spline curvature, double vdes, double dt, double elapsedTime);
+
+  // plotTraj is used by rViz to compute points for line strip, it is a lighter weight version of nextState
+  union State genLineStrip(union State veh, union Spline curvature, double vdes, double t);
 
 private:
   // speedControlLogic prevents the vehicle from exceeding dynamic limits
@@ -230,21 +239,8 @@ private:
   union State pDerivEstimate(union State veh, union State veh_next, union State goal, union Spline curvature, int p_id,
                              double h, double dt, double horizon, int stateIndex);
 
-public:
-  // generateCorrection inverts the Jacobian and updates the spline parameters
-  union Spline generateCorrection(union State veh, union State veh_next, union State goal, union Spline curvature,
-                                  double dt, double horizon);
-
-  // nextState is used by the robot to compute commands once an adequate set of parameters has been found
-  union State nextState(union State veh, union Spline curvature, double vdes, double dt, double elapsedTime);
-
-private:
   // trajectoryGenerator is like a "main function" used to iterate through a series of goal states
   union Spline trajectoryGenerator(double sx, double sy, double theta, double v, double kappa);
-
-public:
-  // plotTraj is used by rViz to compute points for line strip, it is a lighter weight version of nextState
-  union State genLineStrip(union State veh, union Spline curvature, double vdes, double t);
 };
 }  // namespace lattice
 }  // namespace planner

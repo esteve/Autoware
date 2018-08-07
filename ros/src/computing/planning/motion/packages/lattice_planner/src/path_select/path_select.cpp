@@ -28,9 +28,12 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include <ros/ros.h>
 #include "autoware_msgs/lane.h"
 #include <iostream>
+#pragma GCC diagnostic pop
 
 static ros::Publisher _pub;
 
@@ -49,8 +52,6 @@ int main(int argc, char **argv)
     _pub = nh.advertise<autoware_msgs::lane>("final_waypoints", 1000,true);
 
     ros::spin();
-
-
 
     return 0;
 }
