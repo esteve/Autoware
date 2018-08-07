@@ -171,7 +171,7 @@ static void canInfoCallback(const autoware_msgs::CanInfoConstPtr& msg)
   double steering_wheel_angle = msg->angle;
   // g_current_velocity = (msg->speed)*(1000.00/3600);
   steering_wheel_angle = steering_wheel_angle * (3.1496 / 180.00);
-  g_can_info_curvature = (steering_wheel_angle / (double)WHEEL_TO_STEERING) / WHEEL_BASE;
+  g_can_info_curvature = steering_wheel_angle / WHEEL_TO_STEERING / WHEEL_BASE;
   ROS_INFO_STREAM("Steering Wheel Angle: " << steering_wheel_angle);
   ROS_INFO_STREAM("Curvature from CAN: " << g_can_info_curvature);
 }
@@ -180,7 +180,7 @@ static void canInfoCallback(const autoware_msgs::CanInfoConstPtr& msg)
 {
   double steering_wheel_angle = msg->steering_wheel_angle;
   _current_velocity = (msg->speed);
-  _can_info_curvature = (steering_wheel_angle / (double) WHEEL_TO_STEERING_MKZ) / WHEEL_BASE_MKZ;
+  _can_info_curvature = (steering_wheel_angle /  WHEEL_TO_STEERING_MKZ / WHEEL_BASE_MKZ;
   ROS_INFO_STREAM("Steering Wheel Angle: "<<steering_wheel_angle);
   ROS_INFO_STREAM("Curvature from CAN: "<<_mkz_info_curvature);
 }
@@ -245,9 +245,9 @@ static void displayNextWaypoint(int i)
 /////////////////////////////////////////////////////////////////
 // Compute the goal state of the vehicle
 /////////////////////////////////////////////////////////////////
-static union State computeWaypointGoal(int next_waypoint)
+static union autoware::planner::lattice::State computeWaypointGoal(int next_waypoint)
 {
-  union State l_goal;
+  union autoware::planner::lattice::State l_goal;
 
   // Get the next waypoint position with respect to the vehicles frame
   // l_goal.sx = _path_pp.transformWaypoint(next_waypoint).getX();
@@ -300,9 +300,9 @@ static union State computeWaypointGoal(int next_waypoint)
 
   // Note we limit kappa from being too extreme
   // 10.0 was arbitrary, we really need a better curvature estimate
-  l_goal.kappa = std::min((double)kmax / 10.0, l_goal.kappa);
+  l_goal.kappa = std::min(autoware::planner::lattice::TrajectoryGenerator::KMAX / 10.0, l_goal.kappa);
 
-  l_goal.kappa = std::max((double)kmin / 10.0, l_goal.kappa);
+  l_goal.kappa = std::max(autoware::planner::lattice::TrajectoryGenerator::KMIN / 10.0, l_goal.kappa);
 
   // Get the desired velocity at the closest waypoint
   l_goal.v = g_current_waypoints.getWaypointVelocityMPS(next_waypoint);
@@ -313,9 +313,9 @@ static union State computeWaypointGoal(int next_waypoint)
 /////////////////////////////////////////////////////////////////
 // Compute current state of the vehicle
 /////////////////////////////////////////////////////////////////
-static union State computeVeh(int old_time, double old_theta, int next_waypoint)
+static union autoware::planner::lattice::State computeVeh(int old_time, double old_theta, int next_waypoint)
 {
-  union State l_veh;
+  union autoware::planner::lattice::State l_veh;
 
   // Goal is computed relative to vehicle coordinate frame
   l_veh.sx = 0.0;
@@ -369,14 +369,19 @@ static union State computeVeh(int old_time, double old_theta, int next_waypoint)
 /////////////////////////////////////////////////////////////////
 // Compute trajectory
 /////////////////////////////////////////////////////////////////
-static union Spline waypointTrajectory(union State veh, union State goal, union Spline curvature, int next_waypoint)
+static union autoware::planner::lattice::Spline waypointTrajectory(union autoware::planner::lattice::State veh,
+                                                                   union autoware::planner::lattice::State goal,
+                                                                   union autoware::planner::lattice::Spline curvature,
+                                                                   int next_waypoint)
 {
   curvature.success = true;
   bool convergence = false;
   int iteration = 0;
-  union State veh_next;
-  double dt = step_size;
+  union autoware::planner::lattice::State veh_next;
+  double dt = autoware::planner::lattice::TrajectoryGenerator::STEP_SIZE;
   veh.v = goal.v;
+
+  autoware::planner::lattice::TrajectoryGenerator trajectory_generator_;
 
   // While loop for computing trajectory parameters
   while (convergence == false && iteration < 4)
@@ -387,16 +392,16 @@ static union Spline waypointTrajectory(union State veh, union State goal, union 
     ROS_INFO_STREAM("horizon: " << horizon);
 
     // Run motion model
-    veh_next = motionModel(veh, goal, curvature, dt, horizon, 0);
+    veh_next = trajectory_generator_.motionModel(veh, goal, curvature, dt, horizon, 0);
 
     // Determine convergence criteria
-    convergence = checkConvergence(veh_next, goal);
+    convergence = trajectory_generator_.checkConvergence(veh_next, goal);
 
     // If the motion model doesn't get us to the goal compute new parameters
     if (convergence == false)
     {
       // Update parameters
-      curvature = generateCorrection(veh, veh_next, goal, curvature, dt, horizon);
+      curvature = trajectory_generator_.generateCorrection(veh, veh_next, goal, curvature, dt, horizon);
       iteration++;
 
       // Escape route for poorly conditioned Jacobian
@@ -442,7 +447,8 @@ static union Spline waypointTrajectory(union State veh, union State goal, union 
 /////////////////////////////////////////////////////////////////
 // Draw Spline
 /////////////////////////////////////////////////////////////////
-static void drawSpline(union Spline curvature, union State veh, int flag, int selected)
+static void drawSpline(union autoware::planner::lattice::Spline curvature, union autoware::planner::lattice::State veh,
+                       int flag, int selected)
 {
   static double vdes = veh.vdes;
   // Setup up line strips
@@ -479,7 +485,7 @@ static void drawSpline(union Spline curvature, union State veh, int flag, int se
   }
 
   // Init temp state for storing results of genLineStrip
-  union State temp;
+  union autoware::planner::lattice::State temp;
 
   // Init time
   double sim_time = 0.0;
@@ -490,16 +496,18 @@ static void drawSpline(union Spline curvature, union State veh, int flag, int se
   // Init points
   geometry_msgs::Point p;
 
-  // Create veritices
+  autoware::planner::lattice::TrajectoryGenerator trajectory_generator_;
+
+  // Create vertices
   while (sim_time < horizon && curvature.success == true)
   {
-    temp = genLineStrip(veh, curvature, vdes, sim_time);
+    temp = trajectory_generator_.genLineStrip(veh, curvature, vdes, sim_time);
     p.x = temp.sx;
     p.y = temp.sy;
     p.z = 0.0;
     line_strip.points.push_back(p);
     veh = temp;
-    sim_time = sim_time + plot_step_size;
+    sim_time = sim_time + autoware::planner::lattice::TrajectoryGenerator::PLOT_STEP_SIZE;
   }
 
   // Publish trajectory line strip (to RViz)
@@ -583,8 +591,10 @@ int main(int argc, char** argv)
     flag[i - 1] = flag[i] + 1;
   }
   bool initFlag = false;
-  union Spline prev_curvature;
-  union State veh_fmm;
+  union autoware::planner::lattice::Spline prev_curvature;
+  union autoware::planner::lattice::State veh_fmm;
+
+  autoware::planner::lattice::TrajectoryGenerator trajectory_generator_;
 
   // Here we go....
   while (ros::ok())
@@ -621,19 +631,19 @@ int main(int argc, char** argv)
         _stat_pub.publish(_lf_stat);
 
         // Determine the desired state of the vehicle at the next waypoint
-        union State goal = computeWaypointGoal(next_waypoint);
+        union autoware::planner::lattice::State goal = computeWaypointGoal(next_waypoint);
 
         // Estimate the current state of the vehicle
-        union State veh = computeVeh(old_time, old_theta, next_waypoint);
+        union autoware::planner::lattice::State veh = computeVeh(old_time, old_theta, next_waypoint);
 
         if (initFlag == true && prev_curvature.success == true)
         {
-          veh_fmm = nextState(veh, prev_curvature, veh.vdes, 0.2, 0);
+          veh_fmm = trajectory_generator_.nextState(veh, prev_curvature, veh.vdes, 0.2, 0);
           ROS_INFO_STREAM("est kappa: " << veh_fmm.kappa);
         }
 
         // Initialize the estimate for the curvature
-        union Spline curvature = initParams(veh, goal);
+        union autoware::planner::lattice::Spline curvature = trajectory_generator_.initParams(veh, goal);
 
         // Generate a cubic spline (trajectory) for the vehicle to follow
         curvature = waypointTrajectory(veh, goal, curvature, next_waypoint);
@@ -685,9 +695,9 @@ int main(int argc, char** argv)
           // Note: pragma indicates parallelization for OpenMP
 
           // Setup variables
-          union State tempGoal = goal;
+          union autoware::planner::lattice::State tempGoal = goal;
           int i;
-          union Spline extra;
+          union autoware::planner::lattice::Spline extra;
 
 // Tell OpenMP how to parallelize (keep i private because it is a counter)
 #pragma omp parallel for private(i)

@@ -5,8 +5,8 @@
  *  Created by Matthew O'Kelly on 7/17/15.
  *  Copyright (c) 2015 Matthew O'Kelly. All rights reserved.
  *  mokelly@seas.upenn.edu
- *  
-*/
+ *
+ */
 
 /*
  *  Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
-*/
+ */
 
 #ifndef TRAJECTORYGENERATOR_H
 #define TRAJECTORYGENERATOR_H
@@ -59,179 +59,187 @@
 //#define QUINTIC_STABLE
 //#define FIRST ORDER
 
-// ------------CONSTANTS----------//
-// Constants for forward simulation of ego vehicle
-// Maximum curvature (radians)
-static constexpr double kmax = 0.1900;
-// Minimum curvature (radians)
-static constexpr double kmin = -0.1900;
-// Maximum rate of curvature (radians/second)
-static constexpr double dkmax = 0.1021;
-// Minimum rate of curvature (radians/second)
-static constexpr double dkmin = -0.1021;
-// Maximum acceleration (meters/second^2)
-static constexpr double dvmax = 2.000;
-// Maximum deceleration (meters/second^2)
-static constexpr double dvmin = -6.000;
-// Control latency (seconds)
-static constexpr double tdelay = 0.0800;
-// static constexpr double tdelay = 0.03;
-// Speed control logic a coefficient
-static constexpr double ascl = 0.1681;
-// Speed control logic b coefficient
-static constexpr double bscl = -0.0049;
-// Speed control logic threshold (meters/second)
-static constexpr double vscl = 4.000;
-// Max curvature for speed (radians)
-static constexpr double kvmax = 0.1485;
-// Speed control logic safety factor
-static constexpr double sf = 1.000;
-
-// ------------TERMINATION CRITERIA----------//
-// User defined allowable errors for goal state approximation
-// Allowable crosstrack error (meters)
-static constexpr double crosstrack_e = 0.001;
-// Allowable inline error (meters)
-static constexpr double inline_e = 0.001;
-// Allowable heading error (radians)
-static constexpr double heading_e = 0.1;
-// Allowable curvature error (meters^-1)
-static constexpr double curvature_e = 0.005;
-// General error, ill-defined heuristic (unitless)
-static constexpr double general_e = 0.05;
-
-// ------------PARAMETER PERTURBATION----------//
-// User defined perturbations for estimation of partial derivatives
-// Perturbation for a
-static constexpr double h_sx = 0.001;
-// Perturbation for b
-static constexpr double h_sy = 0.001;
-// Perturbation for d
-static constexpr double h_theta = 0.001;
-// Perturbation for s
-static constexpr double h_k = 0.001;
-// If all parameters are perturbed equally, heuristic (unitless)
-static constexpr double h_global = 0.001;
-
-// --------INTEGRATION STEP SIZE CONTROL------//
-// Set time step
-static constexpr double step_size = 0.0001;
-// Set lightweight timestep for plotting, used in genLineStrip
-static constexpr double plot_step_size = 0.1;
-
-//static constexpr double step_size = 0.05;
-
-// ------------LOG FILES----------//
-// Open files for data logging, define globally so all functions may access:
-std::ofstream fmm_sx;
-std::ofstream fmm_sy;
-std::ofstream fmm_v;
-std::ofstream fmm_theta;
-std::ofstream fmm_kappa;
-
+namespace autoware
+{
+namespace planner
+{
+namespace lattice
+{
 // --------DATA STRUCTURES-------//
 union State
 {
-    struct 
-    {
-        double sx;
-        double sy;
-        double theta; 
-        double kappa;
-        double v;
-        double vdes;
-        double timestamp;
-    };
+  struct
+  {
+    double sx;
+    double sy;
+    double theta;
+    double kappa;
+    double v;
+    double vdes;
+    double timestamp;
+  };
 
-    double state_value[7];
+  double state_value[7];
 };
 
-union Parameters 
+union Parameters
 {
-    struct 
-    {
-        double a;
-        double b;
-        double c;
-        double d;
-        double s;
-    };
+  struct
+  {
+    double a;
+    double b;
+    double c;
+    double d;
+    double s;
+  };
 
-    double param_value[5];
-
-
+  double param_value[5];
 };
 
 union Spline
 {
-    struct
-    {
-        //double kappa_0;
-        double s;
-        double kappa_1;
-        double kappa_2;
-        //double kappa_2;
-        //double kappa_3;
-        
-        double kappa_0;
-        double kappa_3;
-        bool success;
-        
-    };
+  struct
+  {
+    // double kappa_0;
+    double s;
+    double kappa_1;
+    double kappa_2;
+    // double kappa_2;
+    // double kappa_3;
 
-    double spline_value[6];
+    double kappa_0;
+    double kappa_3;
+    bool success;
+  };
+
+  double spline_value[6];
 };
 
 union Command
 {
-    struct
-    {
-        double kappa;
-        double v;
-    };
-    double cmd_index[2];
+  struct
+  {
+    double kappa;
+    double v;
+  };
+  double cmd_index[2];
 };
 
+struct TrajectoryGenerator
+{
+  // ------------CONSTANTS----------//
+  // Constants for forward simulation of ego vehicle
+  // Maximum curvature (radians)
+  static constexpr double KMAX = 0.1900;
+  // Minimum curvature (radians)
+  static constexpr double KMIN = -0.1900;
+  // Maximum rate of curvature (radians/second)
+  static constexpr double DKMAX = 0.1021;
+  // Minimum rate of curvature (radians/second)
+  static constexpr double DKMIN = -0.1021;
+  // Maximum acceleration (meters/second^2)
+  static constexpr double DVMAX = 2.000;
+  // Maximum deceleration (meters/second^2)
+  static constexpr double DVMIN = -6.000;
+  // Control latency (seconds)
+  static constexpr double TDELAY = 0.0800;
+  // static constexpr double TDELAY = 0.03;
+  // Speed control logic a coefficient
+  static constexpr double ASCL = 0.1681;
+  // Speed control logic b coefficient
+  static constexpr double BSCL = -0.0049;
+  // Speed control logic threshold (meters/second)
+  static constexpr double VSCL = 4.000;
+  // Max curvature for speed (radians)
+  static constexpr double KVMAX = 0.1485;
+  // Speed control logic safety factor
+  static constexpr double SF = 1.000;
 
-// ------------FUNCTION DECLARATIONS----------//
+  // ------------TERMINATION CRITERIA----------//
+  // User defined allowable errors for goal state approximation
+  // Allowable crosstrack error (meters)
+  static constexpr double CROSSTRACK_E = 0.001;
+  // Allowable inline error (meters)
+  static constexpr double INLINE_E = 0.001;
+  // Allowable heading error (radians)
+  static constexpr double HEADING_E = 0.1;
+  // Allowable curvature error (meters^-1)
+  static constexpr double CURVATURE_E = 0.005;
+  // General error, ill-defined heuristic (unitless)
+  static constexpr double GENERAL_E = 0.05;
 
-// initParams is used to generate the initial guess for the trajectory
-union Spline initParams(union State veh, union State goal);
+  // ------------PARAMETER PERTURBATION----------//
+  // User defined perturbations for estimation of partial derivatives
+  // Perturbation for a
+  static constexpr double H_SX = 0.001;
+  // Perturbation for b
+  static constexpr double H_SY = 0.001;
+  // Perturbation for d
+  static constexpr double H_THETA = 0.001;
+  // Perturbation for s
+  static constexpr double H_K = 0.001;
+  // If all parameters are perturbed equally, heuristic (unitless)
+  static constexpr double H_GLOBAL = 0.001;
 
-// speedControlLogic prevents the vehicle from exceeding dynamic limits
-union State speedControlLogic(union State veh_next);
+  // --------INTEGRATION STEP SIZE CONTROL------//
+  // Set time step
+  static constexpr double STEP_SIZE = 0.0001;
+  // Set lightweight timestep for plotting, used in genLineStrip
+  static constexpr double PLOT_STEP_SIZE = 0.1;
 
-// responseToControlInputs computes the vehicles next state consider control delay
-union State responseToControlInputs(union State veh, union State veh_next, double dt);
+  // static constexpr double STEP_SIZE = 0.05;
 
-// getCurvatureCommand computes curvature based on the selection of trajectory parameters
-double getCurvatureCommand(union Spline curvature, double dt, double v, double t);
+  // ------------LOG FILES----------//
+  // Open files for data logging
+  std::ofstream fmm_sx_;
+  std::ofstream fmm_sy_;
+  std::ofstream fmm_v_;
+  std::ofstream fmm_theta_;
+  std::ofstream fmm_kappa_;
 
-// getVelocityCommand computes the next velocity command, very naieve right now.
-double getVelocityCommand(double v_goal, double v);
+  // ------------FUNCTION DECLARATIONS----------//
 
-// motionModel computes the vehicles next state, it calls speedControlLogic, responseToControlInputs, getCurvatureCommand and
-// and getVelocityCommand
-union State motionModel(union State veh, union State goal, union Spline curvature, double dt, double horizon, int flag);
+  // initParams is used to generate the initial guess for the trajectory
+  union Spline initParams(union State veh, union State goal);
 
-// checkConvergence determines if the current final state is close enough to the goal state
-bool checkConvergence(union State veh_next, union State goal);
+  // speedControlLogic prevents the vehicle from exceeding dynamic limits
+  union State speedControlLogic(union State veh_next);
 
-// pDerivEstimate computes one column of the Jacobian
-union State pDerivEstimate(union State veh, union State veh_next, union State goal, union Spline curvature, int p_id, double h, double dt, double horizon, int stateIndex);
+  // responseToControlInputs computes the vehicles next state consider control delay
+  union State responseToControlInputs(union State veh, union State veh_next, double dt);
 
-// generateCorrection inverts the Jacobian and updates the spline parameters
-union Spline generateCorrection(union State veh, union State veh_next, union State goal, union Spline curvature, double dt, double horizon);
+  // getCurvatureCommand computes curvature based on the selection of trajectory parameters
+  double getCurvatureCommand(union Spline curvature, double dt, double v, double t);
 
-// nextState is used by the robot to compute commands once an adequate set of parameters has been found
-union State nextState(union State veh, union Spline curvature, double vdes, double dt, double elapsedTime);
+  // getVelocityCommand computes the next velocity command, very naieve right now.
+  double getVelocityCommand(double v_goal, double v);
 
-// trajectoryGenerator is like a "main function" used to iterate through a series of goal states
-union Spline trajectoryGenerator(double sx, double sy, double theta, double v, double kappa);
+  // motionModel computes the vehicles next state, it calls speedControlLogic, responseToControlInputs,
+  // getCurvatureCommand and and getVelocityCommand
+  union State motionModel(union State veh, union State goal, union Spline curvature, double dt, double horizon,
+                          int flag);
 
-// plotTraj is used by rViz to compute points for line strip, it is a lighter weight version of nextState
-union State genLineStrip(union State veh, union Spline curvature, double vdes, double t);
+  // checkConvergence determines if the current final state is close enough to the goal state
+  bool checkConvergence(union State veh_next, union State goal);
 
+  // pDerivEstimate computes one column of the Jacobian
+  union State pDerivEstimate(union State veh, union State veh_next, union State goal, union Spline curvature, int p_id,
+                             double h, double dt, double horizon, int stateIndex);
 
-#endif // TRAJECTORYGENERATOR_H
+  // generateCorrection inverts the Jacobian and updates the spline parameters
+  union Spline generateCorrection(union State veh, union State veh_next, union State goal, union Spline curvature,
+                                  double dt, double horizon);
 
+  // nextState is used by the robot to compute commands once an adequate set of parameters has been found
+  union State nextState(union State veh, union Spline curvature, double vdes, double dt, double elapsedTime);
+
+  // trajectoryGenerator is like a "main function" used to iterate through a series of goal states
+  union Spline trajectoryGenerator(double sx, double sy, double theta, double v, double kappa);
+
+  // plotTraj is used by rViz to compute points for line strip, it is a lighter weight version of nextState
+  union State genLineStrip(union State veh, union Spline curvature, double vdes, double t);
+};
+}  // namespace lattice
+}  // namespace planner
+}  // namespace autoware
+#endif  // TRAJECTORYGENERATOR_H

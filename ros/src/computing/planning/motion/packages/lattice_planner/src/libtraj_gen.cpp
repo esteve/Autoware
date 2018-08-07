@@ -69,6 +69,12 @@
 // #include "trajectorygenerator.h"
 #pragma GCC diagnostic pop
 
+namespace autoware
+{
+namespace planner
+{
+namespace lattice
+{
 //-----------------------------FUNCTIONS------------------------------------//
 
 // ------------INITIALIZE PARAMETERS----------//
@@ -79,7 +85,7 @@
 // This is necessary for cubic splines
 // Use #define FIRST_ORDER if working with first order splines
 
-union Spline initParams(union State veh, union State goal)
+union Spline TrajectoryGenerator::initParams(union State veh, union State goal)
 {
   // Local variables for init and goal:
   double sx_f = goal.sx;
@@ -148,25 +154,25 @@ union Spline initParams(union State veh, union State goal)
 // INPUT: Next vehicle state
 // OUTPUT: Updated next vehicle state
 
-union State speedControlLogic(union State veh_next)
+union State TrajectoryGenerator::speedControlLogic(union State veh_next)
 {
   // Calculate speed (look up from next state vector)
   double vcmd = abs(veh_next.v);
   double kappa_next = veh_next.kappa;
 
   // Compute safe speed
-  double compare_v = (kappa_next - ascl) / bscl;
-  double vcmd_max = std::max((double)vscl, compare_v);
+  double compare_v = (kappa_next - ASCL) / BSCL;
+  double vcmd_max = std::max(VSCL, compare_v);
 
   // Compute safe curvature
-  double compare_kappa = ascl + (bscl * vcmd);
-  double kmax_scl = std::min((double)kmax, compare_kappa);
+  double compare_kappa = ASCL + (BSCL * vcmd);
+  double kmax_scl = std::min(KMAX, compare_kappa);
 
   // Check if std::max curvature for speed is exceeded
   if (kappa_next >= kmax_scl)
   {
     // Check for safe speed
-    vcmd = sf * vcmd_max;
+    vcmd = SF * vcmd_max;
   }
 
   // Update velocity command, this is not quite equivalent to Ferguson, Howard, & Liukhachev
@@ -183,7 +189,7 @@ union State speedControlLogic(union State veh_next)
 // INPUT: Current vehicle state, next vehicle state, sampling time
 // OUTPUT: Next vehicle state
 
-union State responseToControlInputs(union State veh, union State veh_next, double dt)
+union State TrajectoryGenerator::responseToControlInputs(union State veh, union State veh_next, double dt)
 {
   // Local variables:
   double kappa = veh.kappa;
@@ -195,10 +201,10 @@ union State responseToControlInputs(union State veh, union State veh_next, doubl
   double kdot = (kappa_next - kappa) / dt;
 
   // Check against upper bound on curvature rate
-  kdot = std::min(kdot, (double)dkmax);
+  kdot = std::min(kdot, DKMAX);
 
   // Check against lower bound on curvature rate
-  kdot = std::max(kdot, (double)dkmin);
+  kdot = std::max(kdot, DKMIN);
 
   // Call the speedControlLogic function
   veh_next = speedControlLogic(veh_next);
@@ -207,19 +213,19 @@ union State responseToControlInputs(union State veh, union State veh_next, doubl
   kappa_next = kappa + kdot * dt;
 
   // Check upper bound on curvature
-  kappa_next = std::min(kappa_next, (double)kmax);
+  kappa_next = std::min(kappa_next, KMAX);
 
   // Check lower bound on curvature
-  kappa_next = std::max(kappa_next, (double)kmin);
+  kappa_next = std::max(kappa_next, KMIN);
 
   // Compute acceleration command
   double vdot = (v_next - v) / dt;
 
   // Check for upper bound on acceleration
-  vdot = std::min(vdot, (double)dvmax);
+  vdot = std::min(vdot, DVMAX);
 
   // Check for lower bound on acceleration
-  vdot = std::max(vdot, (double)dvmin);
+  vdot = std::max(vdot, DVMIN);
 
   // Compute velocity at next state
   veh_next.v = v + vdot * dt;
@@ -232,7 +238,7 @@ union State responseToControlInputs(union State veh, union State veh_next, doubl
 // Computes the curvature at the next state
 // Still messy but will clean shortly...
 
-double getCurvatureCommand(union Spline curvature, double dt, double v, double t)
+double TrajectoryGenerator::getCurvatureCommand(union Spline curvature, double dt, double v, double t)
 {
   // Local variables for curvature constants
   double kappa_0 = curvature.kappa_0;
@@ -292,7 +298,7 @@ double getCurvatureCommand(union Spline curvature, double dt, double v, double t
 // Currently assumes constant
 /// Will update to include ramp...
 
-double getVelocityCommand(double v_goal, double v)
+double TrajectoryGenerator::getVelocityCommand(double v_goal, double v)
 {
 #ifdef DEBUG
   std::cout << "Function: getVelocityCommand()" << std::endl;
@@ -308,7 +314,8 @@ double getVelocityCommand(double v_goal, double v)
 // INPUT: Current vehicle state, parameterized control inputs, sampling time
 // OUTPUT: Next vehicle state
 
-union State motionModel(union State veh, union State goal, union Spline curvature, double dt, double horizon, int flag)
+union State TrajectoryGenerator::motionModel(union State veh, union State goal, union Spline curvature, double dt,
+                                             double horizon, int flag)
 {
   // Initialized the elapsed time to 0.0 s
   double t = 0.0;
@@ -371,11 +378,11 @@ union State motionModel(union State veh, union State goal, union Spline curvatur
     // Write to log file if we are testing
     if (flag == 1)
     {
-      fmm_sx << veh_temp.sx << ", ";
-      fmm_sy << veh_temp.sy << ", ";
-      fmm_v << veh_temp.v << ", ";
-      fmm_theta << veh_temp.theta << ", ";
-      fmm_kappa << veh_temp.kappa << ", ";
+      fmm_sx_ << veh_temp.sx << ", ";
+      fmm_sy_ << veh_temp.sy << ", ";
+      fmm_v_ << veh_temp.v << ", ";
+      fmm_theta_ << veh_temp.theta << ", ";
+      fmm_kappa_ << veh_temp.kappa << ", ";
     }
   }
 // Print information to console
@@ -399,7 +406,7 @@ union State motionModel(union State veh, union State goal, union Spline curvatur
 // IE consider 359 degrees vs. 1 degree
 // Can use fmod (modulus) over pi or 2*pi
 
-bool checkConvergence(union State veh_next, union State goal)
+bool TrajectoryGenerator::checkConvergence(union State veh_next, union State goal)
 {
 #ifdef DEBUG
   std::cout << "Function: checkConvergence()" << std::endl;
@@ -423,9 +430,9 @@ bool checkConvergence(union State veh_next, union State goal)
 #endif
 
   // Depending on the order of the spline the full range of checks is:
-  // if(sx_error<general_e && sy_error<general_e && theta_error<general_e
-  // && theta_error<general_e && v_error<general_e && kappa_error<general_e)
-  if (sx_error < general_e && sy_error < general_e && theta_error < general_e)
+  // if(sx_error<GENERAL_E && sy_error<GENERAL_E && theta_error<GENERAL_E
+  // && theta_error<GENERAL_E && v_error<GENERAL_E && kappa_error<GENERAL_E)
+  if (sx_error < GENERAL_E && sy_error < GENERAL_E && theta_error < GENERAL_E)
   {
 #ifdef DEBUG
     std::cout << "Converged" << std::endl;
@@ -448,8 +455,9 @@ bool checkConvergence(union State veh_next, union State goal)
 //        Predictive Motion Model, Action Parameters
 // OUTPUT: Jacobian Estimate
 
-union State pDerivEstimate(union State veh, union State veh_next, union State goal, union Spline curvature, int p_id,
-                           double h, double dt, double horizon, int stateIndex)
+union State TrajectoryGenerator::pDerivEstimate(union State veh, union State veh_next, union State goal,
+                                                union Spline curvature, int p_id, double h, double dt, double horizon,
+                                                int stateIndex)
 {
 #ifdef DEBUG
   std::cout << "Function: pDerivEstimate()" << std::endl;
@@ -502,8 +510,8 @@ union State pDerivEstimate(union State veh, union State veh_next, union State go
 // ------------UPDATE PARAMETERS----------//
 // Inverts the Jacobian and computes the parameter update
 
-union Spline generateCorrection(union State veh, union State veh_next, union State goal, union Spline curvature,
-                                double dt, double horizon)
+union Spline TrajectoryGenerator::generateCorrection(union State veh, union State veh_next, union State goal,
+                                                     union Spline curvature, double dt, double horizon)
 {
   // Compute jacobian with forward gradient
   int i;
@@ -522,9 +530,9 @@ union Spline generateCorrection(union State veh, union State veh_next, union Sta
   // How much to perturb each parameter
   // Note h(0) is larger than others because it perturbs length ~20m
   // Rather than kappa < ~.19 rad/m
-  h(0) = (double)h_global * 10;
-  h(1) = (double)h_global;
-  h(2) = (double)h_global;
+  h(0) = H_GLOBAL * 10;
+  h(1) = H_GLOBAL;
+  h(2) = H_GLOBAL;
 
   // For each parameter compute the vector associated with a small perturbation of its value
   for (i = 0; i < stateIndex; i++)
@@ -583,7 +591,8 @@ union Spline generateCorrection(union State veh, union State veh_next, union Sta
 // INPUT: Current vehicle state, parameterized control inputs, sampling time
 // OUTPUT: Next vehicle state
 
-union State nextState(union State veh, union Spline curvature, double vdes, double dt, double elapsedTime)
+union State TrajectoryGenerator::nextState(union State veh, union Spline curvature, double vdes, double dt,
+                                           double elapsedTime)
 {
   union State veh_next;
   union State veh_temp;
@@ -637,7 +646,7 @@ union State nextState(union State veh, union Spline curvature, double vdes, doub
     veh_next = responseToControlInputs(veh, veh_next, dt);
 
     // Increment the timestep
-    t = t + step_size;
+    t = t + STEP_SIZE;
 
     // Update veh_temp
     veh_temp = veh_next;
@@ -649,11 +658,11 @@ union State nextState(union State veh, union Spline curvature, double vdes, doub
 
 // plotTraj is used by rViz to compute points for line strip,
 // it is a lighter weight version of nextState
-union State genLineStrip(union State veh, union Spline curvature, double vdes, double t)
+union State TrajectoryGenerator::genLineStrip(union State veh, union Spline curvature, double vdes, double t)
 {
   union State veh_next;
   union State veh_temp;
-  double dt = plot_step_size;
+  double dt = PLOT_STEP_SIZE;
 
   veh_temp = veh;
 
@@ -701,12 +710,15 @@ union State genLineStrip(union State veh, union Spline curvature, double vdes, d
 
   return veh_next;
 }
+}  // namespace lattice
+}  // namespace planner
+}  // namespace autoware
 
 //------------------MAIN FUNCTION AND HELPER FOR STANDALONE OPERATION------------------------//
 
 #ifdef STANDALONE
 
-union Spline trajectoryGenerator(double sx, double sy, double theta, double v, double kappa)
+union Spline TrajectoryGenerator::trajectoryGenerator(double sx, double sy, double theta, double v, double kappa)
 {
 #ifdef DEBUG
   std::cout << "Function: main()" << std::endl;
@@ -856,5 +868,4 @@ int main(void)
 
   return 1;
 }
-
 #endif

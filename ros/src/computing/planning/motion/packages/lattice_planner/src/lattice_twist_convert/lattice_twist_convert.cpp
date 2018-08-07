@@ -70,13 +70,13 @@ static const int LOOP_RATE = 15;  // Hz
 static const double next_time = 1.00 / LOOP_RATE;
 
 // Global vairable to hold curvature
-union Spline curvature;
+union autoware::planner::lattice::Spline curvature;
 
 // Global variable to hold vehicle state
-union State veh;
+union autoware::planner::lattice::State veh;
 
 // Global var
-union State veh_temp;
+union autoware::planner::lattice::State veh_temp;
 
 // Global variable to keep track of when the last message was recieved:
 double start_time;
@@ -135,6 +135,8 @@ int main(int argc, char** argv)
   bool endflag = false;
   static double vdes;
 
+  autoware::planner::lattice::TrajectoryGenerator trajectory_generator;
+
   while (ros::ok())
   {
     std_msgs::Bool _lf_stat;
@@ -150,15 +152,15 @@ int main(int argc, char** argv)
       {
         vdes = veh.vdes;
         // This computes the next command
-        veh_temp = nextState(veh, curvature, vdes, next_time, elapsedTime + 0.1);
+        veh_temp = trajectory_generator.nextState(veh, curvature, vdes, next_time, elapsedTime + 0.1);
       }
 
       // Set velocity
       twist.twist.linear.x = vdes;
 
       // Ensure kappa is reasonable
-      veh_temp.kappa = std::min(kmax, veh_temp.kappa);
-      veh_temp.kappa = std::max(kmin, veh_temp.kappa);
+      veh_temp.kappa = std::min(autoware::planner::lattice::TrajectoryGenerator::KMAX, veh_temp.kappa);
+      veh_temp.kappa = std::max(autoware::planner::lattice::TrajectoryGenerator::KMIN, veh_temp.kappa);
 
       // Set angular velocity
       twist.twist.angular.z = vdes * veh_temp.kappa;
