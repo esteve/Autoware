@@ -56,6 +56,8 @@
  *
 */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include <iostream>
 #include <vector>
 #include <armadillo>
@@ -67,12 +69,7 @@
 #include <stdio.h>
 #include "libtraj_gen.h"
 // #include "trajectorygenerator.h"
-
-
-
-using namespace std;
-
-
+#pragma GCC diagnostic pop
 
 //-----------------------------FUNCTIONS------------------------------------//
 

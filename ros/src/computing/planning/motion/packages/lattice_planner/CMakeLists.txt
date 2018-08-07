@@ -44,7 +44,7 @@ catkin_package(
         autoware_msgs
 )
 
-SET(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
+SET(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
 include_directories(
         include
@@ -52,26 +52,26 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-add_library(libtraj_gen lib/libtraj_gen.cpp)
+add_library(libtraj_gen src/libtraj_gen.cpp)
 target_link_libraries(libtraj_gen ${catkin_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
-add_executable(lattice_trajectory_gen nodes/lattice_trajectory_gen/lattice_trajectory_gen.cpp)
+add_executable(lattice_trajectory_gen src/lattice_trajectory_gen/lattice_trajectory_gen.cpp)
 target_link_libraries(lattice_trajectory_gen libtraj_gen ${catkin_LIBRARIES})
 add_dependencies(lattice_trajectory_gen
         ${catkin_EXPORTED_TARGETS})
 
-add_executable(lattice_twist_convert nodes/lattice_twist_convert/lattice_twist_convert.cpp)
+add_executable(lattice_twist_convert src/lattice_twist_convert/lattice_twist_convert.cpp)
 target_link_libraries(lattice_twist_convert libtraj_gen ${catkin_LIBRARIES})
 add_dependencies(lattice_twist_convert
         ${catkin_EXPORTED_TARGETS})
 
-add_executable(lattice_velocity_set nodes/lattice_velocity_set/lattice_velocity_set.cpp nodes/lattice_velocity_set/libvelocity_set.cpp)
+add_executable(lattice_velocity_set src/lattice_velocity_set/lattice_velocity_set.cpp src/lattice_velocity_set/libvelocity_set.cpp)
 target_link_libraries(lattice_velocity_set ${catkin_LIBRARIES})
 add_dependencies(lattice_velocity_set
         ${catkin_EXPORTED_TARGETS})
 
-add_executable(path_select nodes/path_select/path_select.cpp)
-target_link_libraries(path_select ${catkin_LIBRARIES})
-add_dependencies(path_select
-        ${catkin_EXPORTED_TARGETS})
+# add_executable(path_select src/path_select/path_select.cpp)
+# target_link_libraries(path_select ${catkin_LIBRARIES})
+# add_dependencies(path_select
+#         ${catkin_EXPORTED_TARGETS})
 

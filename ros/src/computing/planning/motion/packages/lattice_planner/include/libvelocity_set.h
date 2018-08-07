@@ -1,6 +1,8 @@
 #ifndef _VELOCITY_SET_H
 #define _VELOCITY_SET_H
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -10,7 +12,14 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Point.h>
 #include <vector_map/vector_map.h>
+#pragma GCC diagnostic pop
 
+namespace autoware
+{
+namespace planner
+{
+namespace velocity_set
+{
 enum EControl
 {
   KEEP = -1,
@@ -48,17 +57,17 @@ public:
   vector_map::LineArray line_;
   vector_map::PointArray point_;
 
-  void crossWalkCallback(const vector_map::CrossWalkArray &msg);
-  void areaCallback(const vector_map::AreaArray &msg);
-  void lineCallback(const vector_map::LineArray &msg);
-  void pointCallback(const vector_map::PointArray &msg);
+  void crossWalkCallback(const vector_map::CrossWalkArray& msg);
+  void areaCallback(const vector_map::AreaArray& msg);
+  void lineCallback(const vector_map::LineArray& msg);
+  void pointCallback(const vector_map::PointArray& msg);
 
   int countAreaSize() const;
-  void getAID(std::unordered_map<int, std::vector<int>> &aid_crosswalk) const;
-  void calcDetectionArea(const std::unordered_map<int, std::vector<int>> &bdid2aid_map);
-  geometry_msgs::Point calcCenterofGravity(const int &aid) const;
-  double calcCrossWalkWidth(const int &aid) const;
-  geometry_msgs::Point getPoint(const int &pid) const;
+  void getAID(std::unordered_map<int, std::vector<int>>& aid_crosswalk) const;
+  void calcDetectionArea(const std::unordered_map<int, std::vector<int>>& bdid2aid_map);
+  geometry_msgs::Point calcCenterofGravity(const int& aid) const;
+  double calcCrossWalkWidth(const int& aid) const;
+  geometry_msgs::Point getPoint(const int& pid) const;
   void calcCenterPoints();
   void setCrossWalkPoints();
   int getSize() const
@@ -69,11 +78,11 @@ public:
   {
     return bdID_;
   }
-  CrossWalkPoints getDetectionPoints(const int &id) const
+  CrossWalkPoints getDetectionPoints(const int& id) const
   {
     return detection_points_.at(id);
   }
-  void setDetectionWaypoint(const int &num)
+  void setDetectionWaypoint(const int& num)
   {
     detection_waypoint_ = num;
   }
@@ -81,7 +90,7 @@ public:
   {
     return detection_waypoint_;
   }
-  void setDetectionCrossWalkID(const int &id)
+  void setDetectionCrossWalkID(const int& id)
   {
     detection_crosswalk_id_ = id;
   }
@@ -115,19 +124,19 @@ private:
   bool decided_;
 
 public:
-  void setStopPoint(const geometry_msgs::Point &p)
+  void setStopPoint(const geometry_msgs::Point& p)
   {
     stop_points_.push_back(p);
   }
-  void setDeceleratePoint(const geometry_msgs::Point &p)
+  void setDeceleratePoint(const geometry_msgs::Point& p)
   {
     decelerate_points_.push_back(p);
   }
-  void setDecided(const bool &b)
+  void setDecided(const bool& b)
   {
     decided_ = b;
   }
-  geometry_msgs::Point getObstaclePoint(const EControl &kind);
+  geometry_msgs::Point getObstaclePoint(const EControl& kind);
   void clearStopPoints()
   {
     stop_points_.clear();
@@ -150,9 +159,11 @@ public:
   }
 };
 
-inline double calcSquareOfLength(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2)
+inline double calcSquareOfLength(const geometry_msgs::Point& p1, const geometry_msgs::Point& p2)
 {
   return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y) + (p1.z - p2.z) * (p1.z - p2.z);
 }
-
+}  // namespace velocity_set
+}  // namespace planner
+}  // namespace autoware
 #endif /* _VELOCITY_SET_H */
