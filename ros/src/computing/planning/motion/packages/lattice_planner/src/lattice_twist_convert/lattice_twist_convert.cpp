@@ -150,7 +150,7 @@ int main(int argc, char** argv)
     {
       if (newState == true)
       {
-        vdes = veh.vdes;
+        vdes = veh.data.vdes;
         // This computes the next command
         veh_temp = trajectory_generator.nextState(veh, curvature, vdes, next_time, elapsedTime + 0.1);
       }
@@ -159,11 +159,11 @@ int main(int argc, char** argv)
       twist.twist.linear.x = vdes;
 
       // Ensure kappa is reasonable
-      veh_temp.kappa = std::min(autoware::planner::lattice::TrajectoryGenerator::KMAX, veh_temp.kappa);
-      veh_temp.kappa = std::max(autoware::planner::lattice::TrajectoryGenerator::KMIN, veh_temp.kappa);
+      veh_temp.data.kappa = std::min(autoware::planner::lattice::TrajectoryGenerator::KMAX, veh_temp.data.kappa);
+      veh_temp.data.kappa = std::max(autoware::planner::lattice::TrajectoryGenerator::KMIN, veh_temp.data.kappa);
 
       // Set angular velocity
-      twist.twist.angular.z = vdes * veh_temp.kappa;
+      twist.twist.angular.z = vdes * veh_temp.data.kappa;
     }
 
     // If we have finished the mission clean up

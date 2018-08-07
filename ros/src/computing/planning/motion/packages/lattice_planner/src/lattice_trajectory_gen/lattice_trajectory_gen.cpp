@@ -250,11 +250,13 @@ static union autoware::planner::lattice::State computeWaypointGoal(int next_wayp
   union autoware::planner::lattice::State l_goal;
 
   // Get the next waypoint position with respect to the vehicles frame
-  // l_goal.sx = _path_pp.transformWaypoint(next_waypoint).getX();
-  // l_goal.sy = _path_pp.transformWaypoint(next_waypoint).getY();
+  // l_goal.data.sx = _path_pp.transformWaypoint(next_waypoint).getX();
+  // l_goal.data.sy = _path_pp.transformWaypoint(next_waypoint).getY();
 
-  l_goal.sx = calcRelativeCoordinate(g_current_waypoints.getWaypointPosition(next_waypoint), g_current_pose.pose).x;
-  l_goal.sy = calcRelativeCoordinate(g_current_waypoints.getWaypointPosition(next_waypoint), g_current_pose.pose).y;
+  l_goal.data.sx =
+      calcRelativeCoordinate(g_current_waypoints.getWaypointPosition(next_waypoint), g_current_pose.pose).x;
+  l_goal.data.sy =
+      calcRelativeCoordinate(g_current_waypoints.getWaypointPosition(next_waypoint), g_current_pose.pose).y;
 
   // Get the next next waypoint position
   // double waypoint_lookahead_1_x = _path_pp.transformWaypoint(next_waypoint+1).getX();
@@ -273,15 +275,15 @@ static union autoware::planner::lattice::State computeWaypointGoal(int next_wayp
       calcRelativeCoordinate(g_current_waypoints.getWaypointPosition(next_waypoint + 2), g_current_pose.pose).y;
 
   // Compute dX and dY relative to lookahead
-  double dX_1 = waypoint_lookahead_1_x - l_goal.sx;
-  double dY_1 = waypoint_lookahead_1_y - l_goal.sy;
+  double dX_1 = waypoint_lookahead_1_x - l_goal.data.sx;
+  double dY_1 = waypoint_lookahead_1_y - l_goal.data.sy;
 
   // Compute dX and dY relative to lookahead and next lookahead
   double dX_2 = waypoint_lookahead_2_x - waypoint_lookahead_1_x;
   double dY_2 = waypoint_lookahead_2_y - waypoint_lookahead_1_y;
 
   // Estimate desired orientation of the vehicle at next waypoint
-  l_goal.theta = atan(dY_1 / dX_1);
+  l_goal.data.theta = atan(dY_1 / dX_1);
 
   // Estimate the desired orientation at the next next waypoint
   double theta_lookahead = atan(dY_2 / dX_2);
@@ -291,21 +293,21 @@ static union autoware::planner::lattice::State computeWaypointGoal(int next_wayp
                    pow(waypoint_lookahead_1_x - waypoint_lookahead_2_y, 2));
 
   // Angle
-  double angle = (theta_lookahead - l_goal.theta) / 2.00;
+  double angle = (theta_lookahead - l_goal.data.theta) / 2.00;
 
   // Estimate Kappa
   double estimate = 2.00 * sin(angle) / ds;
 
-  l_goal.kappa = estimate;
+  l_goal.data.kappa = estimate;
 
   // Note we limit kappa from being too extreme
   // 10.0 was arbitrary, we really need a better curvature estimate
-  l_goal.kappa = std::min(autoware::planner::lattice::TrajectoryGenerator::KMAX / 10.0, l_goal.kappa);
+  l_goal.data.kappa = std::min(autoware::planner::lattice::TrajectoryGenerator::KMAX / 10.0, l_goal.data.kappa);
 
-  l_goal.kappa = std::max(autoware::planner::lattice::TrajectoryGenerator::KMIN / 10.0, l_goal.kappa);
+  l_goal.data.kappa = std::max(autoware::planner::lattice::TrajectoryGenerator::KMIN / 10.0, l_goal.data.kappa);
 
   // Get the desired velocity at the closest waypoint
-  l_goal.v = g_current_waypoints.getWaypointVelocityMPS(next_waypoint);
+  l_goal.data.v = g_current_waypoints.getWaypointVelocityMPS(next_waypoint);
 
   return l_goal;
 }
@@ -318,8 +320,8 @@ static union autoware::planner::lattice::State computeVeh(int old_time, double o
   union autoware::planner::lattice::State l_veh;
 
   // Goal is computed relative to vehicle coordinate frame
-  l_veh.sx = 0.0;
-  l_veh.sy = 0.0;
+  l_veh.data.sx = 0.0;
+  l_veh.data.sy = 0.0;
 
   // Compute yaw (orientation) relative to the world coordinate frame
   // Necessary to compute curvature, but note that in the local coordinate frame yaw is still 0.0
@@ -330,37 +332,37 @@ static union autoware::planner::lattice::State computeVeh(int old_time, double o
   m.getRPY(roll, pitch, yaw);
 
   // Because we are on the coordinate system of the base frame
-  l_veh.theta = 0.0;
+  l_veh.data.theta = 0.0;
 
   // Get the current velocity of the vehicle
-  l_veh.v = g_current_velocity;
+  l_veh.data.v = g_current_velocity;
 
   // Get the desired velocity
-  l_veh.vdes = g_current_waypoints.getWaypointVelocityMPS(next_waypoint);
-  ROS_INFO_STREAM("Desired Velocity: " << l_veh.vdes);
+  l_veh.data.vdes = g_current_waypoints.getWaypointVelocityMPS(next_waypoint);
+  ROS_INFO_STREAM("Desired Velocity: " << l_veh.data.vdes);
 
   // Not using timing related stuff for now...
   double w = g_current_angular_velocity;
   ROS_INFO_STREAM("Current omega: " << w);
-  l_veh.kappa = w / l_veh.vdes;
+  l_veh.data.kappa = w / l_veh.data.vdes;
 
   if (!g_sim_mode && g_prius_mode)
   {
-    l_veh.kappa = g_can_info_curvature;
-    ROS_INFO_STREAM("Current kappa (prius): " << l_veh.kappa);
+    l_veh.data.kappa = g_can_info_curvature;
+    ROS_INFO_STREAM("Current kappa (prius): " << l_veh.data.kappa);
   }
 
   else if (!g_sim_mode && g_mkz_mode)
   {
-    l_veh.kappa = g_mkz_info_curvature;
-    ROS_INFO_STREAM("Current kappa (mkz): " << l_veh.kappa);
+    l_veh.data.kappa = g_mkz_info_curvature;
+    ROS_INFO_STREAM("Current kappa (mkz): " << l_veh.data.kappa);
   }
 
   else
   {
     double w = g_current_angular_velocity;
-    l_veh.kappa = w / l_veh.vdes;
-    ROS_INFO_STREAM("Current kappa (sim): " << l_veh.kappa);
+    l_veh.data.kappa = w / l_veh.data.vdes;
+    ROS_INFO_STREAM("Current kappa (sim): " << l_veh.data.kappa);
   }
 
   return l_veh;
@@ -374,12 +376,12 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
                                                                    union autoware::planner::lattice::Spline curvature,
                                                                    int next_waypoint)
 {
-  curvature.success = true;
+  curvature.data.success = true;
   bool convergence = false;
   int iteration = 0;
   union autoware::planner::lattice::State veh_next;
   double dt = autoware::planner::lattice::TrajectoryGenerator::STEP_SIZE;
-  veh.v = goal.v;
+  veh.data.v = goal.data.v;
 
   autoware::planner::lattice::TrajectoryGenerator trajectory_generator_;
 
@@ -387,8 +389,8 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
   while (convergence == false && iteration < 4)
   {
     // Set time horizon
-    double horizon = curvature.s / veh.vdes;
-    ROS_INFO_STREAM("vdes: " << veh.vdes);
+    double horizon = curvature.data.s / veh.data.vdes;
+    ROS_INFO_STREAM("vdes: " << veh.data.vdes);
     ROS_INFO_STREAM("horizon: " << horizon);
 
     // Run motion model
@@ -405,12 +407,12 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
       iteration++;
 
       // Escape route for poorly conditioned Jacobian
-      if (curvature.success == false)
+      if (curvature.data.success == false)
       {
-        ROS_INFO_STREAM("Init State: sx " << veh.sx << " sy " << veh.sy << " theta " << veh.theta << " kappa "
-                                          << veh.kappa << " v " << veh.v);
-        ROS_INFO_STREAM("Goal State: sx " << goal.sx << " sy " << goal.sy << " theta " << goal.theta << " kappa "
-                                          << goal.kappa << " v" << goal.v);
+        ROS_INFO_STREAM("Init State: sx " << veh.data.sx << " sy " << veh.data.sy << " theta " << veh.data.theta
+                                          << " kappa " << veh.data.kappa << " v " << veh.data.v);
+        ROS_INFO_STREAM("Goal State: sx " << goal.data.sx << " sy " << goal.data.sy << " theta " << goal.data.theta
+                                          << " kappa " << goal.data.kappa << " v" << goal.data.v);
         break;
       }
     }
@@ -418,13 +420,14 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
 
   if (convergence == false)
   {
-    ROS_INFO_STREAM("Next State: sx " << veh_next.sx << " sy " << veh_next.sy << " theta " << veh_next.theta
-                                      << " kappa " << veh_next.kappa << " v " << veh_next.v);
-    ROS_INFO_STREAM("Init State: sx " << veh.sx << " sy " << veh.sy << " theta " << veh.theta << " kappa "
-                                      << veh.kappa);
-    ROS_INFO_STREAM("Goal State: sx " << goal.sx << " sy " << goal.sy << " theta " << goal.theta << " kappa "
-                                      << goal.kappa);
-    curvature.success = false;
+    ROS_INFO_STREAM("Next State: sx " << veh_next.data.sx << " sy " << veh_next.data.sy << " theta "
+                                      << veh_next.data.theta << " kappa " << veh_next.data.kappa << " v "
+                                      << veh_next.data.v);
+    ROS_INFO_STREAM("Init State: sx " << veh.data.sx << " sy " << veh.data.sy << " theta " << veh.data.theta
+                                      << " kappa " << veh.data.kappa);
+    ROS_INFO_STREAM("Goal State: sx " << goal.data.sx << " sy " << goal.data.sy << " theta " << goal.data.theta
+                                      << " kappa " << goal.data.kappa);
+    curvature.data.success = false;
   }
 
   else
@@ -433,7 +436,7 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
 
 #ifdef LOG_OUTPUT
     // Set time horizon
-    double horizon = curvature.s / v_0;
+    double horizon = curvature.data.s / v_0;
     // Run motion model and log data for plotting
     veh_next = motionModel(veh, goal, curvature, 0.1, horizon, 1);
     fmm_sx << "0.0 \n";
@@ -450,7 +453,7 @@ static union autoware::planner::lattice::Spline waypointTrajectory(union autowar
 static void drawSpline(union autoware::planner::lattice::Spline curvature, union autoware::planner::lattice::State veh,
                        int flag, int selected)
 {
-  static double vdes = veh.vdes;
+  static double vdes = veh.data.vdes;
   // Setup up line strips
   visualization_msgs::Marker line_strip;
   if (!g_sim_mode)
@@ -491,7 +494,7 @@ static void drawSpline(union autoware::planner::lattice::Spline curvature, union
   double sim_time = 0.0;
 
   // Figure out sim time horizon
-  double horizon = curvature.s / veh.vdes;
+  double horizon = curvature.data.s / veh.data.vdes;
 
   // Init points
   geometry_msgs::Point p;
@@ -499,11 +502,11 @@ static void drawSpline(union autoware::planner::lattice::Spline curvature, union
   autoware::planner::lattice::TrajectoryGenerator trajectory_generator_;
 
   // Create vertices
-  while (sim_time < horizon && curvature.success == true)
+  while (sim_time < horizon && curvature.data.success == true)
   {
     temp = trajectory_generator_.genLineStrip(veh, curvature, vdes, sim_time);
-    p.x = temp.sx;
-    p.y = temp.sy;
+    p.x = temp.data.sx;
+    p.y = temp.data.sy;
     p.z = 0.0;
     line_strip.points.push_back(p);
     veh = temp;
@@ -636,10 +639,10 @@ int main(int argc, char** argv)
         // Estimate the current state of the vehicle
         union autoware::planner::lattice::State veh = computeVeh(old_time, old_theta, next_waypoint);
 
-        if (initFlag == true && prev_curvature.success == true)
+        if (initFlag == true && prev_curvature.data.success == true)
         {
-          veh_fmm = trajectory_generator_.nextState(veh, prev_curvature, veh.vdes, 0.2, 0);
-          ROS_INFO_STREAM("est kappa: " << veh_fmm.kappa);
+          veh_fmm = trajectory_generator_.nextState(veh, prev_curvature, veh.data.vdes, 0.2, 0);
+          ROS_INFO_STREAM("est kappa: " << veh_fmm.data.kappa);
         }
 
         // Initialize the estimate for the curvature
@@ -651,7 +654,7 @@ int main(int argc, char** argv)
         initFlag = true;
 
         // Check that we got a result and publish it or stream expletive to screen
-        if (curvature.success == true)
+        if (curvature.data.success == true)
         {
           std_msgs::Float64MultiArray spline;
           spline.data.clear();
@@ -683,7 +686,7 @@ int main(int argc, char** argv)
         if (g_sim_mode)
         {
           // If the velocity is nonzero (would preclude horizon calc) publish trajectory viz
-          if (veh.v > 0)
+          if (veh.data.v > 0)
           {
             drawSpline(curvature, veh, 0, 0);
             SPLINE_INDEX++;
@@ -706,13 +709,13 @@ int main(int argc, char** argv)
           for (i = 1; i < 31; i++)
           {
             // Shift the y-coordinate of the goal
-            tempGoal.sy = tempGoal.sy + perturb[i - 1];
+            tempGoal.data.sy = tempGoal.data.sy + perturb[i - 1];
 
             // Compute new spline
             extra = waypointTrajectory(veh, tempGoal, curvature, next_waypoint);
 
             // Display trajectory
-            if (veh.v > 5.00)
+            if (veh.data.v > 5.00)
             {
               drawSpline(extra, veh, i, 1);
             }
@@ -720,8 +723,8 @@ int main(int argc, char** argv)
         }
 
         // Update previous time and orientation measurements
-        old_time = veh.timestamp;
-        old_theta = veh.theta;
+        old_time = veh.data.timestamp;
+        old_theta = veh.data.theta;
       }
       // If the next way point is not available
       else

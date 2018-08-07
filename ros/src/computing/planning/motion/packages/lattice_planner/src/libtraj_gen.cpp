@@ -88,11 +88,11 @@ namespace lattice
 union Spline TrajectoryGenerator::initParams(union State veh, union State goal)
 {
   // Local variables for init and goal:
-  double sx_f = goal.sx;
-  double sy_f = goal.sy;
-  double theta_f = goal.theta;
-  double kappa_0 = veh.kappa;
-  double kappa_f = goal.kappa;
+  double sx_f = goal.data.sx;
+  double sy_f = goal.data.sy;
+  double theta_f = goal.data.theta;
+  double kappa_0 = veh.data.kappa;
+  double kappa_f = goal.data.kappa;
 
   // Initialize output
   union Spline curvature;
@@ -120,12 +120,13 @@ union Spline TrajectoryGenerator::initParams(union State veh, union State goal)
   double b = (3 / (pow(s, 2))) * (kappa_0 + kappa_f) + (6 * theta_f / (pow(s, 3)));
 
   double si = 0.00;
-  curvature.kappa_0 = veh.kappa;
-  curvature.kappa_1 =
-      (1.00 / 49.00) * (8.00 * b * si - 8.00 * b * curvature.s - 26.00 * curvature.kappa_0 - curvature.kappa_3);
-  curvature.kappa_2 = 0.25 * (curvature.kappa_3 - 2.00 * curvature.kappa_0 + 5.00 * curvature.kappa_1);
-  curvature.kappa_3 = goal.kappa;
-  curvature.s = s;
+  curvature.data.kappa_0 = veh.data.kappa;
+  curvature.data.kappa_1 = (1.00 / 49.00) * (8.00 * b * si - 8.00 * b * curvature.data.s -
+                                             26.00 * curvature.data.kappa_0 - curvature.data.kappa_3);
+  curvature.data.kappa_2 =
+      0.25 * (curvature.data.kappa_3 - 2.00 * curvature.data.kappa_0 + 5.00 * curvature.data.kappa_1);
+  curvature.data.kappa_3 = goal.data.kappa;
+  curvature.data.s = s;
 
 #endif
 
@@ -136,14 +137,14 @@ union Spline TrajectoryGenerator::initParams(union State veh, union State goal)
   double s = d * ((pow(d_theta, 2)) / 5 + 1) + (2 / 5) * d_theta;
   union Spline curvature;
   double si = 0.00;
-  curvature.kappa_0 = veh.kappa;
-  curvature.kappa_1 = 0.00;
-  curvature.kappa_2 = 0.00;
-  curvature.kappa_3 = goal.kappa;
-  curvature.s = s;
+  curvature.data.kappa_0 = veh.kappa;
+  curvature.data.kappa_1 = 0.00;
+  curvature.data.kappa_2 = 0.00;
+  curvature.data.kappa_3 = goal.kappa;
+  curvature.data.s = s;
 #endif
 
-  curvature.success = true;
+  curvature.data.success = true;
 
   // Return the initialized curvature union
   return curvature;
@@ -157,8 +158,8 @@ union Spline TrajectoryGenerator::initParams(union State veh, union State goal)
 union State TrajectoryGenerator::speedControlLogic(union State veh_next)
 {
   // Calculate speed (look up from next state vector)
-  double vcmd = abs(veh_next.v);
-  double kappa_next = veh_next.kappa;
+  double vcmd = abs(veh_next.data.v);
+  double kappa_next = veh_next.data.kappa;
 
   // Compute safe speed
   double compare_v = (kappa_next - ASCL) / BSCL;
@@ -176,7 +177,7 @@ union State TrajectoryGenerator::speedControlLogic(union State veh_next)
   }
 
   // Update velocity command, this is not quite equivalent to Ferguson, Howard, & Liukhachev
-  veh_next.v = vcmd;
+  veh_next.data.v = vcmd;
 
   // Return vehicle state
   return veh_next;
@@ -192,10 +193,10 @@ union State TrajectoryGenerator::speedControlLogic(union State veh_next)
 union State TrajectoryGenerator::responseToControlInputs(union State veh, union State veh_next, double dt)
 {
   // Local variables:
-  double kappa = veh.kappa;
-  double kappa_next = veh_next.kappa;
-  double v = veh.v;
-  double v_next = veh_next.v;
+  double kappa = veh.data.kappa;
+  double kappa_next = veh_next.data.kappa;
+  double v = veh.data.v;
+  double v_next = veh_next.data.v;
 
   // Compute curvature rate command
   double kdot = (kappa_next - kappa) / dt;
@@ -228,7 +229,7 @@ union State TrajectoryGenerator::responseToControlInputs(union State veh, union 
   vdot = std::max(vdot, DVMIN);
 
   // Compute velocity at next state
-  veh_next.v = v + vdot * dt;
+  veh_next.data.v = v + vdot * dt;
 
   // Return next vehicle state
   return veh_next;
@@ -241,11 +242,11 @@ union State TrajectoryGenerator::responseToControlInputs(union State veh, union 
 double TrajectoryGenerator::getCurvatureCommand(union Spline curvature, double dt, double v, double t)
 {
   // Local variables for curvature constants
-  double kappa_0 = curvature.kappa_0;
-  double kappa_1 = curvature.kappa_1;
-  double kappa_2 = curvature.kappa_2;
-  double kappa_3 = curvature.kappa_3;
-  double s = curvature.s;
+  double kappa_0 = curvature.data.kappa_0;
+  double kappa_1 = curvature.data.kappa_1;
+  double kappa_2 = curvature.data.kappa_2;
+  double kappa_3 = curvature.data.kappa_3;
+  double s = curvature.data.s;
 
   // Init next command
   double k_next_cmd = 0.0;
@@ -326,42 +327,42 @@ union State TrajectoryGenerator::motionModel(union State veh, union State goal, 
   // Set veh_temp to the current state
   veh_temp = veh;
   // Compute the stop time for the simulation
-  horizon = curvature.s / goal.v;
+  horizon = curvature.data.s / goal.data.v;
 
   while (t < horizon)
   {
     // Read state vector
-    double sx = veh_temp.sx;
-    double sy = veh_temp.sy;
-    double v = veh_temp.v;
-    double theta = veh_temp.theta;
-    double kappa = veh_temp.kappa;
-    double v_goal = goal.v;
+    double sx = veh_temp.data.sx;
+    double sy = veh_temp.data.sy;
+    double v = veh_temp.data.v;
+    double theta = veh_temp.data.theta;
+    double kappa = veh_temp.data.kappa;
+    double v_goal = goal.data.v;
 
     // Compute change in 2D x-position (this is x_dot)
     double sx_next = sx + (v * cos(theta) * dt);
 
-    veh_next.sx = sx_next;
+    veh_next.data.sx = sx_next;
 
     // Compute change in 2D y-position (this is y_dot)
     double sy_next = sy + (v * sin(theta) * dt);
 
-    veh_next.sy = sy_next;
+    veh_next.data.sy = sy_next;
 
     // Compute change in 2D orientation (this is theta_dot)
     double theta_next = theta + (v * kappa * dt);
 
-    veh_next.theta = theta_next;
+    veh_next.data.theta = theta_next;
 
     // Get curvature command
-    double kappa_next = getCurvatureCommand(curvature, dt, veh.v, t);
+    double kappa_next = getCurvatureCommand(curvature, dt, veh.data.v, t);
 
-    veh_next.kappa = kappa_next;
+    veh_next.data.kappa = kappa_next;
 
     // Get velocity command
     double v_next = getVelocityCommand(v_goal, v);
 
-    veh_next.v = v_next;
+    veh_next.data.v = v_next;
 
     // Get acceleration command, not used yet...
     // double a_next_cmd = 0;
@@ -378,11 +379,11 @@ union State TrajectoryGenerator::motionModel(union State veh, union State goal, 
     // Write to log file if we are testing
     if (flag == 1)
     {
-      fmm_sx_ << veh_temp.sx << ", ";
-      fmm_sy_ << veh_temp.sy << ", ";
-      fmm_v_ << veh_temp.v << ", ";
-      fmm_theta_ << veh_temp.theta << ", ";
-      fmm_kappa_ << veh_temp.kappa << ", ";
+      fmm_sx_ << veh_temp.data.sx << ", ";
+      fmm_sy_ << veh_temp.data.sy << ", ";
+      fmm_v_ << veh_temp.data.v << ", ";
+      fmm_theta_ << veh_temp.data.theta << ", ";
+      fmm_kappa_ << veh_temp.data.kappa << ", ";
     }
   }
 // Print information to console
@@ -412,13 +413,13 @@ bool TrajectoryGenerator::checkConvergence(union State veh_next, union State goa
   std::cout << "Function: checkConvergence()" << std::endl;
 #endif
 
-  double sx_error = abs(veh_next.sx - goal.sx);
-  double sy_error = abs(veh_next.sy - goal.sy);
-  double theta_error = abs(veh_next.theta - goal.theta);
+  double sx_error = abs(veh_next.data.sx - goal.data.sx);
+  double sy_error = abs(veh_next.data.sy - goal.data.sy);
+  double theta_error = abs(veh_next.data.theta - goal.data.theta);
 
   // Commented out to suppress compiler warning about unused var
-  // double v_error = abs(veh_next.v - goal.v);
-  // double kappa_error = abs(veh_next.kappa - goal.kappa);
+  // double v_error = abs(veh_next.data.v - goal.data.v);
+  // double kappa_error = abs(veh_next.data.kappa - goal.data.kappa);
 
 #ifdef DEBUG_OUTPUT
   std::cout << "Error sx: " << sx_error << std::endl;
@@ -565,11 +566,11 @@ union Spline TrajectoryGenerator::generateCorrection(union State veh, union Stat
   }
   catch (const std::exception& e)
   {
-    curvature.success = false;
+    curvature.data.success = false;
     return curvature;
-    std::cout << "goal.sx: " << goal.sx << std::endl;
-    std::cout << "goal.sy: " << goal.sx << std::endl;
-    std::cout << "goal.theta: " << goal.sx << std::endl;
+    std::cout << "goal.data.sx: " << goal.data.sx << std::endl;
+    std::cout << "goal.data.sy: " << goal.data.sx << std::endl;
+    std::cout << "goal.data.theta: " << goal.data.sx << std::endl;
   }
 
   dP = J * dX;
@@ -603,11 +604,11 @@ union State TrajectoryGenerator::nextState(union State veh, union Spline curvatu
   veh_temp = veh;
 
   // Read state vector
-  double sx = veh_temp.sx;
-  double sy = veh_temp.sy;
-  double v = veh_temp.v;
-  double theta = veh_temp.theta;
-  double kappa = veh_temp.kappa;
+  double sx = veh_temp.data.sx;
+  double sy = veh_temp.data.sy;
+  double v = veh_temp.data.v;
+  double theta = veh_temp.data.theta;
+  double kappa = veh_temp.data.kappa;
   double v_goal = vdes;
 
   // std::cout<<"Total sim time: " << total_time << std::endl;
@@ -617,27 +618,27 @@ union State TrajectoryGenerator::nextState(union State veh, union Spline curvatu
     // Compute change in 2D x-position (this is x_dot)
     double sx_next = sx + (v * cos(theta) * dt);
 
-    veh_next.sx = sx_next;
+    veh_next.data.sx = sx_next;
 
     // Compute change in 2D y-position (this is y_dot)
     double sy_next = sy + (v * sin(theta) * dt);
 
-    veh_next.sy = sy_next;
+    veh_next.data.sy = sy_next;
 
     // Compute change in 2D orientation (this is theta_dot)
     double theta_next = theta + (v * kappa * dt);
 
-    veh_next.theta = theta_next;
+    veh_next.data.theta = theta_next;
 
     // Get curvature command
-    double kappa_next = getCurvatureCommand(curvature, dt, veh.v, t);
+    double kappa_next = getCurvatureCommand(curvature, dt, veh.data.v, t);
 
-    veh_next.kappa = kappa_next;
+    veh_next.data.kappa = kappa_next;
 
     // Get velocity command
     double v_next = getVelocityCommand(v_goal, v);
 
-    veh_next.v = v_next;
+    veh_next.data.v = v_next;
 
     // Get acceleration command
     // double a_next_cmd = 0;
@@ -667,37 +668,37 @@ union State TrajectoryGenerator::genLineStrip(union State veh, union Spline curv
   veh_temp = veh;
 
   // Read state vector
-  double sx = veh_temp.sx;
-  double sy = veh_temp.sy;
-  double v = veh_temp.v;
-  double theta = veh_temp.theta;
-  double kappa = veh_temp.kappa;
+  double sx = veh_temp.data.sx;
+  double sy = veh_temp.data.sy;
+  double v = veh_temp.data.v;
+  double theta = veh_temp.data.theta;
+  double kappa = veh_temp.data.kappa;
   double v_goal = vdes;
 
   // Compute change in 2D x-position (this is x_dot)
   double sx_next = sx + (v * cos(theta) * dt);
 
-  veh_next.sx = sx_next;
+  veh_next.data.sx = sx_next;
 
   // Compute change in 2D y-position (this is y_dot)
   double sy_next = sy + (v * sin(theta) * dt);
 
-  veh_next.sy = sy_next;
+  veh_next.data.sy = sy_next;
 
   // Compute change in 2D orientation (this is theta_dot)
   double theta_next = theta + (v * kappa * dt);
 
-  veh_next.theta = theta_next;
+  veh_next.data.theta = theta_next;
 
   // Get curvature command
-  double kappa_next = getCurvatureCommand(curvature, dt, veh.v, t);
+  double kappa_next = getCurvatureCommand(curvature, dt, veh.data.v, t);
 
-  veh_next.kappa = kappa_next;
+  veh_next.data.kappa = kappa_next;
 
   // Get velocity command
   double v_next = getVelocityCommand(v_goal, v);
 
-  veh_next.v = v_next;
+  veh_next.data.v = v_next;
 
   // Get acceleration command
   // double a_next_cmd = 0;

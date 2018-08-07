@@ -68,7 +68,7 @@ namespace lattice
 // --------DATA STRUCTURES-------//
 union State
 {
-  struct
+  struct Data
   {
     double sx;
     double sy;
@@ -77,28 +77,28 @@ union State
     double v;
     double vdes;
     double timestamp;
-  };
+  } data;
 
   double state_value[7];
 };
 
 union Parameters
 {
-  struct
+  struct Data
   {
     double a;
     double b;
     double c;
     double d;
     double s;
-  };
+  } data;
 
   double param_value[5];
 };
 
 union Spline
 {
-  struct
+  struct Data
   {
     // double kappa_0;
     double s;
@@ -110,23 +110,24 @@ union Spline
     double kappa_0;
     double kappa_3;
     bool success;
-  };
+  } data;
 
   double spline_value[6];
 };
 
 union Command
 {
-  struct
+  struct Data
   {
     double kappa;
     double v;
-  };
+  } data;
   double cmd_index[2];
 };
 
-struct TrajectoryGenerator
+class TrajectoryGenerator
 {
+public:
   // ------------CONSTANTS----------//
   // Constants for forward simulation of ego vehicle
   // Maximum curvature (radians)
@@ -189,6 +190,7 @@ struct TrajectoryGenerator
 
   // static constexpr double STEP_SIZE = 0.05;
 
+private:
   // ------------LOG FILES----------//
   // Open files for data logging
   std::ofstream fmm_sx_;
@@ -199,9 +201,19 @@ struct TrajectoryGenerator
 
   // ------------FUNCTION DECLARATIONS----------//
 
+public:
   // initParams is used to generate the initial guess for the trajectory
   union Spline initParams(union State veh, union State goal);
 
+  // motionModel computes the vehicles next state, it calls speedControlLogic, responseToControlInputs,
+  // getCurvatureCommand and and getVelocityCommand
+  union State motionModel(union State veh, union State goal, union Spline curvature, double dt, double horizon,
+                          int flag);
+
+  // checkConvergence determines if the current final state is close enough to the goal state
+  bool checkConvergence(union State veh_next, union State goal);
+
+private:
   // speedControlLogic prevents the vehicle from exceeding dynamic limits
   union State speedControlLogic(union State veh_next);
 
@@ -214,18 +226,11 @@ struct TrajectoryGenerator
   // getVelocityCommand computes the next velocity command, very naieve right now.
   double getVelocityCommand(double v_goal, double v);
 
-  // motionModel computes the vehicles next state, it calls speedControlLogic, responseToControlInputs,
-  // getCurvatureCommand and and getVelocityCommand
-  union State motionModel(union State veh, union State goal, union Spline curvature, double dt, double horizon,
-                          int flag);
-
-  // checkConvergence determines if the current final state is close enough to the goal state
-  bool checkConvergence(union State veh_next, union State goal);
-
   // pDerivEstimate computes one column of the Jacobian
   union State pDerivEstimate(union State veh, union State veh_next, union State goal, union Spline curvature, int p_id,
                              double h, double dt, double horizon, int stateIndex);
 
+public:
   // generateCorrection inverts the Jacobian and updates the spline parameters
   union Spline generateCorrection(union State veh, union State veh_next, union State goal, union Spline curvature,
                                   double dt, double horizon);
@@ -233,9 +238,11 @@ struct TrajectoryGenerator
   // nextState is used by the robot to compute commands once an adequate set of parameters has been found
   union State nextState(union State veh, union Spline curvature, double vdes, double dt, double elapsedTime);
 
+private:
   // trajectoryGenerator is like a "main function" used to iterate through a series of goal states
   union Spline trajectoryGenerator(double sx, double sy, double theta, double v, double kappa);
 
+public:
   // plotTraj is used by rViz to compute points for line strip, it is a lighter weight version of nextState
   union State genLineStrip(union State veh, union Spline curvature, double vdes, double t);
 };
