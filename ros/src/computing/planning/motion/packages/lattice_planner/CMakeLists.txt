@@ -44,7 +44,7 @@ catkin_package(
         autoware_msgs
 )
 
-SET(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra ${CMAKE_CXX_FLAGS}")
+SET(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra -Wpedantic ${CMAKE_CXX_FLAGS}")
 
 include_directories(
         include
@@ -70,8 +70,8 @@ target_link_libraries(lattice_velocity_set ${catkin_LIBRARIES})
 add_dependencies(lattice_velocity_set
         ${catkin_EXPORTED_TARGETS})
 
-# add_executable(path_select src/path_select/path_select.cpp)
-# target_link_libraries(path_select ${catkin_LIBRARIES})
-# add_dependencies(path_select
-#         ${catkin_EXPORTED_TARGETS})
+add_executable(path_select src/path_select/path_select.cpp)
+target_link_libraries(path_select ${catkin_LIBRARIES})
+add_dependencies(path_select
+        ${catkin_EXPORTED_TARGETS})
 

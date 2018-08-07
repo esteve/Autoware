@@ -6,7 +6,7 @@
  *  Copyright (c) 2015 Matthew O'Kelly. All rights reserved.
  *  mokelly@seas.upenn.edu
  *
-*/
+ */
 
 /*
  *  Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,10 @@
  *  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
-*/
+ */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
@@ -51,26 +53,27 @@
 #include <std_msgs/MultiArrayLayout.h>
 #include <std_msgs/MultiArrayDimension.h>
 #include <std_msgs/Float64MultiArray.h>
+#include <vector>
+#pragma GCC diagnostic pop
+
 #include "waypoint_follower/libwaypoint_follower.h"
 #include "libtraj_gen.h"
-#include <vector>
-
 
 /////////////////////////////////////////////////////////////////
 // Global variables
 /////////////////////////////////////////////////////////////////
 
 // Set update rate
-static const int LOOP_RATE = 15; //Hz
+static const int LOOP_RATE = 15;  // Hz
 
 // Next state time difference
-static const double next_time = 1.00/LOOP_RATE;
+static const double next_time = 1.00 / LOOP_RATE;
 
 // Global vairable to hold curvature
 union Spline curvature;
 
 // Global variable to hold vehicle state
-union State veh; 
+union State veh;
 
 // Global var
 union State veh_temp;
@@ -82,29 +85,27 @@ double start_time;
 double current_time;
 
 // Global flag to indicate a new state
-bool newState = FALSE;
+bool newState = false;
 
 // Global flag to indicate a new spline
-bool newSpline =FALSE;
-
+bool newSpline = false;
 
 /////////////////////////////////////////////////////////////////
 // Callback function declarations
 /////////////////////////////////////////////////////////////////
 
-// Callback function to get control parameters 
+// Callback function to get control parameters
 void splineCallback(const std_msgs::Float64MultiArray::ConstPtr& spline);
 
-// Callback function to get state parameters 
+// Callback function to get state parameters
 void stateCallback(const std_msgs::Float64MultiArray::ConstPtr& state);
-
 
 /////////////////////////////////////////////////////////////////
 // Main loop
 /////////////////////////////////////////////////////////////////
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  //fmm_omega.open("fmm_omega.dat");
+  // fmm_omega.open("fmm_omega.dat");
 
   ROS_INFO_STREAM("Command converter begin: ");
   ROS_INFO_STREAM("Loop Rate: " << next_time);
@@ -132,44 +133,43 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(LOOP_RATE);
 
   bool endflag = false;
-  static  double vdes;
+  static double vdes;
 
   while (ros::ok())
   {
     std_msgs::Bool _lf_stat;
-    
 
     ros::spinOnce();
     current_time = ros::Time::now().toSec();
     double elapsedTime = current_time - start_time;
 
     // Make sure we haven't finished the mission yet
-    if(endflag==FALSE)
+    if (endflag == false)
     {
-          if(newState == TRUE)
-          {
-            vdes = veh.vdes;
-            // This computes the next command
-            veh_temp = nextState(veh, curvature, vdes, next_time, elapsedTime + 0.1);
-          }
+      if (newState == true)
+      {
+        vdes = veh.vdes;
+        // This computes the next command
+        veh_temp = nextState(veh, curvature, vdes, next_time, elapsedTime + 0.1);
+      }
 
-          // Set velocity
-          twist.twist.linear.x=vdes;
-          
-          // Ensure kappa is reasonable
-          veh_temp.kappa = min(kmax, veh_temp.kappa);
-          veh_temp.kappa = max (kmin, veh_temp.kappa); 
+      // Set velocity
+      twist.twist.linear.x = vdes;
 
-          // Set angular velocity
-          twist.twist.angular.z=vdes*veh_temp.kappa;
+      // Ensure kappa is reasonable
+      veh_temp.kappa = std::min(kmax, veh_temp.kappa);
+      veh_temp.kappa = std::max(kmin, veh_temp.kappa);
+
+      // Set angular velocity
+      twist.twist.angular.z = vdes * veh_temp.kappa;
     }
 
-    // If we have finished the mission clean up 
+    // If we have finished the mission clean up
     else
     {
       ROS_INFO_STREAM("End mission");
     }
-    
+
     // Publish messages
     cmd_velocity_publisher.publish(twist);
     loop_rate.sleep();
@@ -177,24 +177,23 @@ int main(int argc, char **argv)
   return 0;
 }
 
-
 /////////////////////////////////////////////////////////////////
 // Call back function for state update
 /////////////////////////////////////////////////////////////////
 
 void stateCallback(const std_msgs::Float64MultiArray::ConstPtr& state)
 {
-    int i = 0;
+  int i = 0;
 
-    for(std::vector<double>::const_iterator it = state->data.begin(); it != state->data.end(); ++it)
-    {
-        veh.state_value[i] = *it;
-        i++;
-    }
+  for (std::vector<double>::const_iterator it = state->data.begin(); it != state->data.end(); ++it)
+  {
+    veh.state_value[i] = *it;
+    i++;
+  }
 
-    newState = TRUE;
+  newState = true;
 
-    return;
+  return;
 }
 
 /////////////////////////////////////////////////////////////////
@@ -203,24 +202,24 @@ void stateCallback(const std_msgs::Float64MultiArray::ConstPtr& state)
 
 void splineCallback(const std_msgs::Float64MultiArray::ConstPtr& spline)
 {
-    if(ros::ok())
-    {
-      start_time= ros::Time::now().toSec();
-    }
+  if (ros::ok())
+  {
+    start_time = ros::Time::now().toSec();
+  }
 
-    // Reset elapsed time to 0, if called...
-    int i = 0;
+  // Reset elapsed time to 0, if called...
+  int i = 0;
 
-    for(std::vector<double>::const_iterator it = spline->data.begin(); it != spline->data.end(); ++it)
-    {
-        curvature.spline_value[i] = *it;
-        i++;
-    }
+  for (std::vector<double>::const_iterator it = spline->data.begin(); it != spline->data.end(); ++it)
+  {
+    curvature.spline_value[i] = *it;
+    i++;
+  }
 
-    if(newState == TRUE)
-    {
-      newSpline = TRUE;
-    }
-    
-    return;
+  if (newState == true)
+  {
+    newSpline = true;
+  }
+
+  return;
 }

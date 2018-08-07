@@ -31,6 +31,9 @@
 #ifndef _LIB_WAYPOINT_FOLLOWER_H_
 #define _LIB_WAYPOINT_FOLLOWER_H_
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 // C++ header
 #include <iostream>
 #include <sstream>
@@ -40,6 +43,8 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include "autoware_msgs/lane.h"
+
+#pragma GCC diagnostic pop
 
 class WayPoints
 {

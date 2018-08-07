@@ -39,6 +39,13 @@
 #ifndef TRAJECTORYGENERATOR_H
 #define TRAJECTORYGENERATOR_H
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
+#include <fstream>
+
+#pragma GCC diagnostic pop
+
 // ---------DEFINE MODE---------//
 //#define GEN_PLOT_FILES
 //#define DEBUG_OUTPUT
@@ -52,81 +59,75 @@
 //#define QUINTIC_STABLE
 //#define FIRST ORDER
 
-
-// ------------BOOLEAN----------//
-#define TRUE 1
-#define FALSE 0
-
 // ------------CONSTANTS----------//
 // Constants for forward simulation of ego vehicle
 // Maximum curvature (radians)
-#define kmax (0.1900)
+static constexpr double kmax = 0.1900;
 // Minimum curvature (radians)
-#define kmin (-0.1900)
+static constexpr double kmin = -0.1900;
 // Maximum rate of curvature (radians/second)
-#define dkmax (0.1021)
+static constexpr double dkmax = 0.1021;
 // Minimum rate of curvature (radians/second)
-#define dkmin (-0.1021)
+static constexpr double dkmin = -0.1021;
 // Maximum acceleration (meters/second^2)
-#define dvmax (2.000)
+static constexpr double dvmax = 2.000;
 // Maximum deceleration (meters/second^2)
-#define dvmin (-6.000)
+static constexpr double dvmin = -6.000;
 // Control latency (seconds)
-#define tdelay (0.0800)
- //#define tdelay (0.03)
+static constexpr double tdelay = 0.0800;
+// static constexpr double tdelay = 0.03;
 // Speed control logic a coefficient
-#define ascl (0.1681)
+static constexpr double ascl = 0.1681;
 // Speed control logic b coefficient
-#define bscl (-0.0049)
+static constexpr double bscl = -0.0049;
 // Speed control logic threshold (meters/second)
-#define vscl (4.000)
+static constexpr double vscl = 4.000;
 // Max curvature for speed (radians)
-#define kvmax (0.1485)
+static constexpr double kvmax = 0.1485;
 // Speed control logic safety factor
-#define sf (1.000)
+static constexpr double sf = 1.000;
 
 // ------------TERMINATION CRITERIA----------//
 // User defined allowable errors for goal state approximation
 // Allowable crosstrack error (meters)
-#define crosstrack_e (0.001)
+static constexpr double crosstrack_e = 0.001;
 // Allowable inline error (meters)
-#define inline_e (0.001)
+static constexpr double inline_e = 0.001;
 // Allowable heading error (radians)
-#define heading_e (0.1)
+static constexpr double heading_e = 0.1;
 // Allowable curvature error (meters^-1)
-#define curvature_e (0.005)
+static constexpr double curvature_e = 0.005;
 // General error, ill-defined heuristic (unitless)
-#define general_e (0.05)
+static constexpr double general_e = 0.05;
 
 // ------------PARAMETER PERTURBATION----------//
 // User defined perturbations for estimation of partial derivatives
 // Perturbation for a
-#define h_sx (0.001)
+static constexpr double h_sx = 0.001;
 // Perturbation for b
-#define h_sy (0.001)
+static constexpr double h_sy = 0.001;
 // Perturbation for d
-#define h_theta (0.001)
+static constexpr double h_theta = 0.001;
 // Perturbation for s
-#define h_k (0.001)
+static constexpr double h_k = 0.001;
 // If all parameters are perturbed equally, heuristic (unitless)
-#define h_global (0.001)
+static constexpr double h_global = 0.001;
 
 // --------INTEGRATION STEP SIZE CONTROL------//
 // Set time step
-#define step_size (0.0001)
+static constexpr double step_size = 0.0001;
 // Set lightweight timestep for plotting, used in genLineStrip
-#define plot_step_size (0.1)
+static constexpr double plot_step_size = 0.1;
 
-//#define step_size (0.05)
+//static constexpr double step_size = 0.05;
 
 // ------------LOG FILES----------//
 // Open files for data logging, define globally so all functions may access:
-using namespace std;
-ofstream fmm_sx;
-ofstream fmm_sy;
-ofstream fmm_v;
-ofstream fmm_theta;
-ofstream fmm_kappa;
+std::ofstream fmm_sx;
+std::ofstream fmm_sy;
+std::ofstream fmm_v;
+std::ofstream fmm_theta;
+std::ofstream fmm_kappa;
 
 // --------DATA STRUCTURES-------//
 union State
