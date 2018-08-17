@@ -4,10 +4,10 @@ namespace autoware
 {
 namespace planner
 {
-namespace velocity_set
+namespace lattice
 {
 // extract edge points from zebra zone
-std::vector<geometry_msgs::Point> removeNeedlessPoints(std::vector<geometry_msgs::Point>& area_points)
+std::vector<geometry_msgs::Point> removeNeedlessPoints(std::vector<geometry_msgs::Point> &area_points)
 {
   area_points.push_back(area_points.front());
   std::map<double, int> length_index;
@@ -26,7 +26,7 @@ std::vector<geometry_msgs::Point> removeNeedlessPoints(std::vector<geometry_msgs
   return new_points;
 }
 
-void CrossWalk::crossWalkCallback(const vector_map::CrossWalkArray& msg)
+void CrossWalk::crossWalkCallback(const vector_map::CrossWalkArray &msg)
 {
   crosswalk_ = msg;
 
@@ -38,7 +38,7 @@ void CrossWalk::crossWalkCallback(const vector_map::CrossWalkArray& msg)
   }
 }
 
-void CrossWalk::areaCallback(const vector_map::AreaArray& msg)
+void CrossWalk::areaCallback(const vector_map::AreaArray &msg)
 {
   area_ = msg;
 
@@ -50,7 +50,7 @@ void CrossWalk::areaCallback(const vector_map::AreaArray& msg)
   }
 }
 
-void CrossWalk::lineCallback(const vector_map::LineArray& msg)
+void CrossWalk::lineCallback(const vector_map::LineArray &msg)
 {
   line_ = msg;
 
@@ -62,7 +62,7 @@ void CrossWalk::lineCallback(const vector_map::LineArray& msg)
   }
 }
 
-void CrossWalk::pointCallback(const vector_map::PointArray& msg)
+void CrossWalk::pointCallback(const vector_map::PointArray &msg)
 {
   point_ = msg;
 
@@ -74,10 +74,10 @@ void CrossWalk::pointCallback(const vector_map::PointArray& msg)
   }
 }
 
-geometry_msgs::Point CrossWalk::getPoint(const int& pid) const
+geometry_msgs::Point CrossWalk::getPoint(const int &pid) const
 {
   geometry_msgs::Point point;
-  for (const auto& p : point_.data)
+  for (const auto &p : point_.data)
   {
     if (p.pid == pid)
     {
@@ -92,10 +92,10 @@ geometry_msgs::Point CrossWalk::getPoint(const int& pid) const
   return point;
 }
 
-geometry_msgs::Point CrossWalk::calcCenterofGravity(const int& aid) const
+geometry_msgs::Point CrossWalk::calcCenterofGravity(const int &aid) const
 {
   int search_lid = -1;
-  for (const auto& area : area_.data)
+  for (const auto &area : area_.data)
     if (area.aid == aid)
     {
       search_lid = area.slid;
@@ -105,7 +105,7 @@ geometry_msgs::Point CrossWalk::calcCenterofGravity(const int& aid) const
   std::vector<geometry_msgs::Point> area_points;
   while (search_lid)
   {
-    for (const auto& line : line_.data)
+    for (const auto &line : line_.data)
     {
       if (line.lid == search_lid)
       {
@@ -122,7 +122,7 @@ geometry_msgs::Point CrossWalk::calcCenterofGravity(const int& aid) const
   if (area_points.size() > 4)
   {
     std::vector<geometry_msgs::Point> filterd_points = removeNeedlessPoints(area_points);
-    for (const auto& p : filterd_points)
+    for (const auto &p : filterd_points)
     {
       point.x += p.x;
       point.y += p.y;
@@ -131,7 +131,7 @@ geometry_msgs::Point CrossWalk::calcCenterofGravity(const int& aid) const
   }
   else
   {
-    for (const auto& p : area_points)
+    for (const auto &p : area_points)
     {
       point.x += p.x;
       point.y += p.y;
@@ -145,10 +145,10 @@ geometry_msgs::Point CrossWalk::calcCenterofGravity(const int& aid) const
   return point;
 }
 
-double CrossWalk::calcCrossWalkWidth(const int& aid) const
+double CrossWalk::calcCrossWalkWidth(const int &aid) const
 {
   int search_lid = -1;
-  for (const auto& area : area_.data)
+  for (const auto &area : area_.data)
     if (area.aid == aid)
     {
       search_lid = area.slid;
@@ -158,7 +158,7 @@ double CrossWalk::calcCrossWalkWidth(const int& aid) const
   std::vector<geometry_msgs::Point> area_points;
   while (search_lid)
   {
-    for (const auto& line : line_.data)
+    for (const auto &line : line_.data)
     {
       if (line.lid == search_lid)
       {
@@ -184,29 +184,29 @@ double CrossWalk::calcCrossWalkWidth(const int& aid) const
 int CrossWalk::countAreaSize() const
 {
   int count = 0;
-  for (const auto& x : crosswalk_.data)
-    if (x.type == 0)  // type:0 -> outer frame of crosswalks
+  for (const auto &x : crosswalk_.data)
+    if (x.type == 0) // type:0 -> outer frame of crosswalks
       count++;
 
   return count;
 }
 
-void CrossWalk::getAID(std::unordered_map<int, std::vector<int>>& bdid2aid_map) const
+void CrossWalk::getAID(std::unordered_map<int, std::vector<int>> &bdid2aid_map) const
 {
-  for (const auto& x : crosswalk_.data)
+  for (const auto &x : crosswalk_.data)
     if (x.type == 1)
-    {                                         // if it is zebra
-      bdid2aid_map[x.bdid].push_back(x.aid);  // save area id
+    {                                        // if it is zebra
+      bdid2aid_map[x.bdid].push_back(x.aid); // save area id
     }
 }
 
-void CrossWalk::calcDetectionArea(const std::unordered_map<int, std::vector<int>>& bdid2aid_map)
+void CrossWalk::calcDetectionArea(const std::unordered_map<int, std::vector<int>> &bdid2aid_map)
 {
-  for (const auto& crosswalk_aids : bdid2aid_map)
+  for (const auto &crosswalk_aids : bdid2aid_map)
   {
     int bdid = crosswalk_aids.first;
     double width = 0.0;
-    for (const auto& aid : crosswalk_aids.second)
+    for (const auto &aid : crosswalk_aids.second)
     {
       detection_points_[bdid].points.push_back(calcCenterofGravity(aid));
       width += calcCrossWalkWidth(aid);
@@ -218,13 +218,13 @@ void CrossWalk::calcDetectionArea(const std::unordered_map<int, std::vector<int>
 
 void CrossWalk::calcCenterPoints()
 {
-  for (const auto& i : bdID_)
+  for (const auto &i : bdID_)
   {
     geometry_msgs::Point center;
     center.x = 0.0;
     center.y = 0.0;
     center.z = 0.0;
-    for (const auto& p : detection_points_[i].points)
+    for (const auto &p : detection_points_[i].points)
     {
       center.x += p.x;
       center.y += p.y;
@@ -244,7 +244,7 @@ void CrossWalk::setCrossWalkPoints()
   getAID(bdid2aid_map);
 
   // Save key values
-  for (const auto& bdid2aid : bdid2aid_map)
+  for (const auto &bdid2aid : bdid2aid_map)
     bdID_.push_back(bdid2aid.first);
 
   calcDetectionArea(bdid2aid_map);
@@ -254,14 +254,14 @@ void CrossWalk::setCrossWalkPoints()
   set_points = true;
 }
 
-geometry_msgs::Point ObstaclePoints::getObstaclePoint(const EControl& kind)
+geometry_msgs::Point ObstaclePoints::getObstaclePoint(const EControl &kind)
 {
   geometry_msgs::Point point;
   decided_ = false;
 
   if (kind == STOP)
   {
-    for (const auto& p : stop_points_)
+    for (const auto &p : stop_points_)
     {
       point.x += p.x;
       point.y += p.y;
@@ -276,7 +276,7 @@ geometry_msgs::Point ObstaclePoints::getObstaclePoint(const EControl& kind)
   }
   else if (kind == DECELERATE)
   {
-    for (const auto& p : decelerate_points_)
+    for (const auto &p : decelerate_points_)
     {
       point.x += p.x;
       point.y += p.y;
@@ -294,6 +294,6 @@ geometry_msgs::Point ObstaclePoints::getObstaclePoint(const EControl& kind)
     return previous_detection_;
   }
 }
-}  // namespace lattice
-}  // namespace planner
-}  // namespace autoware
+} // namespace lattice
+} // namespace planner
+} // namespace autoware

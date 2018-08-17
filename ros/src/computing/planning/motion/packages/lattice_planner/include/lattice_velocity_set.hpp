@@ -104,8 +104,8 @@ class VelocitySet
   double search_distance_ = 60;
   int closest_waypoint_ = -1;
   double current_vel_ = 0.0;  // (m/s) subscribe estimated_vel
-  autoware::planner::velocity_set::CrossWalk vmap;
-  autoware::planner::velocity_set::ObstaclePoints obstacle_;
+  autoware::planner::lattice::CrossWalk vmap;
+  autoware::planner::lattice::ObstaclePoints obstacle_;
 
   /* Config Parameter */
   double detection_range_ = 0;       // if obstacle is in this range, stop
@@ -151,20 +151,20 @@ class VelocitySet
   //          Callback
   //===============================
 
-  void displayObstacle(const autoware::planner::velocity_set::EControl& kind);
+  void displayObstacle(const autoware::planner::lattice::EControl& kind);
 
   void displayDetectionRange(const int& crosswalk_id, const int& num,
-                             const autoware::planner::velocity_set::EControl& kind);
+                             const autoware::planner::lattice::EControl& kind);
 
   int findCrossWalk();
 
-  autoware::planner::velocity_set::EControl crossWalkDetection(const int& crosswalk_id);
+  autoware::planner::lattice::EControl crossWalkDetection(const int& crosswalk_id);
 
-  autoware::planner::velocity_set::EControl vscanDetection();
+  autoware::planner::lattice::EControl vscanDetection();
 
-  autoware::planner::velocity_set::EControl obstacleDetection();
+  autoware::planner::lattice::EControl obstacleDetection();
 
-  void changeWaypoint(const autoware::planner::velocity_set::EControl& detection_result);
+  void changeWaypoint(const autoware::planner::lattice::EControl& detection_result);
 
 public:
   VelocitySet(ros::NodeHandle& nh, ros::NodeHandle& private_nh, int loop_rate)
@@ -180,13 +180,13 @@ public:
 
     //------------------ Vector Map ----------------------//
     dtlane_sub_ = nh_.subscribe("vector_map_info/cross_walk", 1,
-                                &autoware::planner::velocity_set::CrossWalk::crossWalkCallback, &vmap);
+                                &autoware::planner::lattice::CrossWalk::crossWalkCallback, &vmap);
     area_sub_ =
-        nh_.subscribe("vector_map_info/area", 1, &autoware::planner::velocity_set::CrossWalk::areaCallback, &vmap);
+        nh_.subscribe("vector_map_info/area", 1, &autoware::planner::lattice::CrossWalk::areaCallback, &vmap);
     line_sub_ =
-        nh_.subscribe("vector_map_info/line", 1, &autoware::planner::velocity_set::CrossWalk::lineCallback, &vmap);
+        nh_.subscribe("vector_map_info/line", 1, &autoware::planner::lattice::CrossWalk::lineCallback, &vmap);
     point_sub_ =
-        nh_.subscribe("vector_map_info/point", 1, &autoware::planner::velocity_set::CrossWalk::pointCallback, &vmap);
+        nh_.subscribe("vector_map_info/point", 1, &autoware::planner::lattice::CrossWalk::pointCallback, &vmap);
     //----------------------------------------------------//
 
     range_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("detection_range", 0);

@@ -323,7 +323,7 @@ void VelocitySet::localizerCallback(const geometry_msgs::PoseStampedConstPtr& ms
 //          Callback
 //===============================
 
-void VelocitySet::displayObstacle(const autoware::planner::velocity_set::EControl& kind)
+void VelocitySet::displayObstacle(const autoware::planner::lattice::EControl& kind)
 {
   visualization_msgs::Marker marker;
   marker.header.frame_id = "/map";
@@ -333,14 +333,14 @@ void VelocitySet::displayObstacle(const autoware::planner::velocity_set::EContro
   marker.type = visualization_msgs::Marker::CUBE;
   marker.action = visualization_msgs::Marker::ADD;
   marker.pose.position = obstacle_.getObstaclePoint(kind);
-  if (kind == autoware::planner::velocity_set::EControl::OTHERS)
+  if (kind == autoware::planner::lattice::EControl::OTHERS)
     marker.pose.position = obstacle_.getPreviousDetection();
   marker.pose.orientation = localizer_pose_.pose.orientation;
   marker.scale.x = 1.0;
   marker.scale.y = 1.0;
   marker.scale.z = 2.0;
   marker.color.a = 0.7;
-  if (kind == autoware::planner::velocity_set::EControl::STOP)
+  if (kind == autoware::planner::lattice::EControl::STOP)
   {
     marker.color.r = 1.0;
     marker.color.g = 0.0;
@@ -359,7 +359,7 @@ void VelocitySet::displayObstacle(const autoware::planner::velocity_set::EContro
 }
 
 void VelocitySet::displayDetectionRange(const int& crosswalk_id, const int& num,
-                                        const autoware::planner::velocity_set::EControl& kind)
+                                        const autoware::planner::lattice::EControl& kind)
 {
   // set up for marker array
   visualization_msgs::MarkerArray marker_array;
@@ -457,7 +457,7 @@ void VelocitySet::displayDetectionRange(const int& crosswalk_id, const int& num,
   marker_array.markers.push_back(crosswalk_marker);
   marker_array.markers.push_back(waypoint_marker_stop);
   marker_array.markers.push_back(waypoint_marker_decelerate);
-  if (kind == autoware::planner::velocity_set::EControl::STOP)
+  if (kind == autoware::planner::lattice::EControl::STOP)
     marker_array.markers.push_back(stop_line);
   range_pub_.publish(marker_array);
   marker_array.markers.clear();
@@ -481,13 +481,13 @@ int VelocitySet::findCrossWalk()
       // ignore far crosswalk
       geometry_msgs::Point crosswalk_center = vmap.getDetectionPoints(i).center;
       crosswalk_center.z = 0.0;
-      if (autoware::planner::velocity_set::calcSquareOfLength(crosswalk_center, waypoint) > ignore_distance)
+      if (autoware::planner::lattice::calcSquareOfLength(crosswalk_center, waypoint) > ignore_distance)
         continue;
 
       for (auto p : vmap.getDetectionPoints(i).points)
       {
         p.z = waypoint.z;
-        if (autoware::planner::velocity_set::calcSquareOfLength(p, waypoint) < find_distance)
+        if (autoware::planner::lattice::calcSquareOfLength(p, waypoint) < find_distance)
         {
           vmap.setDetectionCrossWalkID(i);
           return num;
@@ -500,7 +500,7 @@ int VelocitySet::findCrossWalk()
   return -1;  // no near crosswalk
 }
 
-autoware::planner::velocity_set::EControl VelocitySet::crossWalkDetection(const int& crosswalk_id)
+autoware::planner::lattice::EControl VelocitySet::crossWalkDetection(const int& crosswalk_id)
 {
   double search_radius = vmap.getDetectionPoints(crosswalk_id).width / 2;
 
@@ -526,19 +526,19 @@ autoware::planner::velocity_set::EControl VelocitySet::crossWalkDetection(const 
         obstacle_.setStopPoint(calcAbsoluteCoordinate(vscan_temp, localizer_pose_.pose));
       }
       if (stop_count > threshold_points_)
-        return autoware::planner::velocity_set::EControl::STOP;
+        return autoware::planner::lattice::EControl::STOP;
     }
 
     obstacle_.clearStopPoints();
   }
 
-  return autoware::planner::velocity_set::EControl::KEEP;  // find no obstacles
+  return autoware::planner::lattice::EControl::KEEP;  // find no obstacles
 }
 
-autoware::planner::velocity_set::EControl VelocitySet::vscanDetection()
+autoware::planner::lattice::EControl VelocitySet::vscanDetection()
 {
   if (vscan_.empty() == true || closest_waypoint_ < 0)
-    return autoware::planner::velocity_set::EControl::KEEP;
+    return autoware::planner::lattice::EControl::KEEP;
 
   int decelerate_or_stop = -10000;
   int decelerate2stop_waypoints = 15;
@@ -552,17 +552,17 @@ autoware::planner::velocity_set::EControl VelocitySet::vscanDetection()
     decelerate_or_stop++;
     if (decelerate_or_stop > decelerate2stop_waypoints || (decelerate_or_stop >= 0 && i >= path_dk_.getSize() - 1) ||
         (decelerate_or_stop >= 0 && i == closest_waypoint_ + search_distance_ - 1))
-      return autoware::planner::velocity_set::EControl::DECELERATE;
+      return autoware::planner::lattice::EControl::DECELERATE;
     if (i > path_dk_.getSize() - 1)
-      return autoware::planner::velocity_set::EControl::KEEP;
+      return autoware::planner::lattice::EControl::KEEP;
 
     // Detection for cross walk
     if (i == vmap.getDetectionWaypoint())
     {
-      if (crossWalkDetection(vmap.getDetectionCrossWalkID()) == autoware::planner::velocity_set::EControl::STOP)
+      if (crossWalkDetection(vmap.getDetectionCrossWalkID()) == autoware::planner::lattice::EControl::STOP)
       {
         obstacle_waypoint_ = i;
-        return autoware::planner::velocity_set::EControl::STOP;
+        return autoware::planner::lattice::EControl::STOP;
       }
     }
 
@@ -592,7 +592,7 @@ autoware::planner::velocity_set::EControl VelocitySet::vscanDetection()
       if (stop_point_count > threshold_points_)
       {
         obstacle_waypoint_ = i;
-        return autoware::planner::velocity_set::EControl::STOP;
+        return autoware::planner::lattice::EControl::STOP;
       }
 
       // without deceleration range
@@ -644,7 +644,7 @@ autoware::planner::velocity_set::EControl VelocitySet::vscanDetection()
     }
   }
 
-  return autoware::planner::velocity_set::EControl::KEEP;  // no obstacles
+  return autoware::planner::lattice::EControl::KEEP;  // no obstacles
 }
 
 /*
@@ -656,17 +656,17 @@ sound_pub_.publish(string);
 }
 */
 
-autoware::planner::velocity_set::EControl VelocitySet::obstacleDetection()
+autoware::planner::lattice::EControl VelocitySet::obstacleDetection()
 {
   static int false_count = 0;
-  static autoware::planner::velocity_set::EControl prev_detection = autoware::planner::velocity_set::EControl::KEEP;
+  static autoware::planner::lattice::EControl prev_detection = autoware::planner::lattice::EControl::KEEP;
 
-  autoware::planner::velocity_set::EControl vscan_result = vscanDetection();
+  autoware::planner::lattice::EControl vscan_result = vscanDetection();
   displayDetectionRange(vmap.getDetectionCrossWalkID(), closest_waypoint_, vscan_result);
 
-  if (prev_detection == autoware::planner::velocity_set::EControl::KEEP)
+  if (prev_detection == autoware::planner::lattice::EControl::KEEP)
   {
-    if (vscan_result != autoware::planner::velocity_set::EControl::KEEP)
+    if (vscan_result != autoware::planner::lattice::EControl::KEEP)
     {  // found obstacle
       displayObstacle(vscan_result);
       prev_detection = vscan_result;
@@ -676,13 +676,13 @@ autoware::planner::velocity_set::EControl VelocitySet::obstacleDetection()
     }
     else
     {  // no obstacle
-      prev_detection = autoware::planner::velocity_set::EControl::KEEP;
+      prev_detection = autoware::planner::lattice::EControl::KEEP;
       return vscan_result;
     }
   }
   else
   {  // prev_detection = STOP or DECELERATE
-    if (vscan_result != autoware::planner::velocity_set::EControl::KEEP)
+    if (vscan_result != autoware::planner::lattice::EControl::KEEP)
     {  // found obstacle
       displayObstacle(vscan_result);
       prev_detection = vscan_result;
@@ -698,12 +698,12 @@ autoware::planner::velocity_set::EControl VelocitySet::obstacleDetection()
       {
         obstacle_waypoint_ = -1;
         false_count = 0;
-        prev_detection = autoware::planner::velocity_set::EControl::KEEP;
+        prev_detection = autoware::planner::lattice::EControl::KEEP;
         return vscan_result;
       }
       else
       {
-        displayObstacle(autoware::planner::velocity_set::EControl::OTHERS);
+        displayObstacle(autoware::planner::lattice::EControl::OTHERS);
         return prev_detection;
       }
     }
@@ -715,11 +715,11 @@ void VelocitySet::updateClosestWaypoint()
   closest_waypoint_ = getClosestWaypoint(path_change_.getCurrentWaypoints(), control_pose_.pose);
 }
 
-void VelocitySet::changeWaypoint(const autoware::planner::velocity_set::EControl& detection_result)
+void VelocitySet::changeWaypoint(const autoware::planner::lattice::EControl& detection_result)
 {
   int obs = obstacle_waypoint_;
 
-  if (detection_result == autoware::planner::velocity_set::EControl::STOP)
+  if (detection_result == autoware::planner::lattice::EControl::STOP)
   {  // STOP for obstacle
     // stop_waypoint is about others_distance_ meter away from obstacles
     int stop_waypoint = obs - ((int)(others_distance_ / path_change_.getInterval()));
@@ -729,7 +729,7 @@ void VelocitySet::changeWaypoint(const autoware::planner::velocity_set::EControl
     path_change_.setTemporalWaypoints(this);
     temporal_waypoints_pub_.publish(path_change_.getTemporalWaypoints());
   }
-  else if (detection_result == autoware::planner::velocity_set::EControl::DECELERATE)
+  else if (detection_result == autoware::planner::lattice::EControl::DECELERATE)
   {  // DECELERATE for obstacles
     path_change_.setPath(path_dk_.getCurrentWaypoints());
     path_change_.setDeceleration(this);
@@ -767,7 +767,7 @@ void VelocitySet::updateDetectionWaypoint()
   {
     vmap.setDetectionWaypoint(findCrossWalk());
   }
-  autoware::planner::velocity_set::EControl detection_result = obstacleDetection();
+  autoware::planner::lattice::EControl detection_result = obstacleDetection();
 
   changeWaypoint(detection_result);
 
