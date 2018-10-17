@@ -113,10 +113,10 @@ private:
   int next_waypoint_number_;
   geometry_msgs::Point next_target_position_;
   double lookahead_distance_;
-  double minimum_lookahead_distance_;
   geometry_msgs::Pose current_pose_;
   double current_linear_velocity_;
   std::vector<autoware_msgs::waypoint> current_waypoints_;
+  double minimum_lookahead_distance_;
 
   // functions
   double calcCurvature(geometry_msgs::Point target) const;
