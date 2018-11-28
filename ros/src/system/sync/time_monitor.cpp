@@ -40,10 +40,10 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "visualization_msgs/MarkerArray.h"
 
-#include "autoware_msgs/ImageObj.h"
-#include "autoware_msgs/PointsImage.h"
-#include "autoware_msgs/ImageObjRanged.h"
-#include "autoware_msgs/ImageObjTracked.h"
+#include "autoware_image_msgs/ImageObj.h"
+#include "autoware_image_msgs/PointsImage.h"
+#include "autoware_image_msgs/ImageObjRanged.h"
+#include "autoware_image_msgs/ImageObjTracked.h"
 #include "autoware_msgs/ObjLabel.h"
 #include "autoware_msgs/Centroids.h"
 #include "autoware_msgs/SyncTimeMonitor.h"
@@ -179,21 +179,21 @@ public:
     TimeManager(int);
     void image_raw_callback(const sensor_msgs::Image::ConstPtr& image_raw_msg);
     void points_raw_callback(const sensor_msgs::PointCloud2::ConstPtr& points_raw_msg);
-    void points_image_callback(const autoware_msgs::PointsImage::ConstPtr& points_image_msg);
+    void points_image_callback(const autoware_image_msgs::PointsImage::ConstPtr& points_image_msg);
     void vscan_points_callback(const sensor_msgs::PointCloud2::ConstPtr& vscan_points_msg);
-    void vscan_image_callback(const autoware_msgs::PointsImage::ConstPtr& vscan_image_msg);
-    void image_obj_callback(const autoware_msgs::ImageObj::ConstPtr& image_obj_msg);
-    void image_obj_ranged_callback(const autoware_msgs::ImageObjRanged::ConstPtr& image_obj_ranged_msg);
-    void image_obj_tracked_callback(const autoware_msgs::ImageObjTracked::ConstPtr& image_obj_tracked_msg);
+    void vscan_image_callback(const autoware_image_msgs::PointsImage::ConstPtr& vscan_image_msg);
+    void image_obj_callback(const autoware_image_msgs::ImageObj::ConstPtr& image_obj_msg);
+    void image_obj_ranged_callback(const autoware_image_msgs::ImageObjRanged::ConstPtr& image_obj_ranged_msg);
+    void image_obj_tracked_callback(const autoware_image_msgs::ImageObjTracked::ConstPtr& image_obj_tracked_msg);
     void current_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& current_pose_msg);
     void obj_label_callback(const autoware_msgs::ObjLabel::ConstPtr& obj_label_msg) ;
     void cluster_centroids_callback(const autoware_msgs::Centroids::ConstPtr& cluster_centroids_msg);
 //    void obj_pose_callback(const visualization_msgs::MarkerArray::ConstPtr& obj_pose_msg);
     void obj_pose_callback(const std_msgs::Time::ConstPtr& obj_pose_timestamp_msg);
     // sync
-    void sync_image_obj_ranged_callback(const autoware_msgs::ImageObj::ConstPtr& sync_image_obj_msg);
-    void sync_image_obj_tracked_callback(const autoware_msgs::ImageObjRanged::ConstPtr& sync_image_obj_ranged_msg);
-    void sync_obj_label_callback(const autoware_msgs::ImageObjTracked::ConstPtr& sync_image_obj_tracked_msg);
+    void sync_image_obj_ranged_callback(const autoware_image_msgs::ImageObj::ConstPtr& sync_image_obj_msg);
+    void sync_image_obj_tracked_callback(const autoware_image_msgs::ImageObjRanged::ConstPtr& sync_image_obj_ranged_msg);
+    void sync_obj_label_callback(const autoware_image_msgs::ImageObjTracked::ConstPtr& sync_image_obj_tracked_msg);
     void sync_obj_pose_callback(const autoware_msgs::ObjLabel::ConstPtr& sync_obj_label_msg);
     // time difference
     void time_diff_callback(const autoware_msgs::SyncTimeDiff::ConstPtr& time_diff_msg);
@@ -262,7 +262,7 @@ void TimeManager::points_raw_callback(const sensor_msgs::PointCloud2::ConstPtr& 
     points_raw_.push_front(points_raw_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::points_image_callback(const autoware_msgs::PointsImage::ConstPtr& points_image_msg) {
+void TimeManager::points_image_callback(const autoware_image_msgs::PointsImage::ConstPtr& points_image_msg) {
 //    ROS_INFO("vscan_image: \t\t\t%d.%d", vscan_image_msg->header.stamp.sec, vscan_image_msg->header.stamp.nsec);
     points_image_.push_front(points_image_msg->header.stamp, get_walltime_now());
 }
@@ -272,22 +272,22 @@ void TimeManager::vscan_points_callback(const sensor_msgs::PointCloud2::ConstPtr
     vscan_points_.push_front(vscan_points_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::vscan_image_callback(const autoware_msgs::PointsImage::ConstPtr& vscan_image_msg) {
+void TimeManager::vscan_image_callback(const autoware_image_msgs::PointsImage::ConstPtr& vscan_image_msg) {
 //    ROS_INFO("vscan_image: \t\t\t%d.%d", vscan_image_msg->header.stamp.sec, vscan_image_msg->header.stamp.nsec);
     vscan_image_.push_front(vscan_image_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::image_obj_callback(const autoware_msgs::ImageObj::ConstPtr& image_obj_msg) {
+void TimeManager::image_obj_callback(const autoware_image_msgs::ImageObj::ConstPtr& image_obj_msg) {
 //    ROS_INFO("image_obj: \t\t\t%d.%d", image_obj_msg->header.stamp.sec, image_obj_msg->header.stamp.nsec);
     image_obj_.push_front(image_obj_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::image_obj_ranged_callback(const autoware_msgs::ImageObjRanged::ConstPtr& image_obj_ranged_msg) {
+void TimeManager::image_obj_ranged_callback(const autoware_image_msgs::ImageObjRanged::ConstPtr& image_obj_ranged_msg) {
 //    ROS_INFO("image_obj_ranged: \t\t%d.%d", image_obj_ranged_msg->header.stamp.sec, image_obj_ranged_msg->header.stamp.nsec);
     image_obj_ranged_.push_front(image_obj_ranged_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::image_obj_tracked_callback(const autoware_msgs::ImageObjTracked::ConstPtr& image_obj_tracked_msg) {
+void TimeManager::image_obj_tracked_callback(const autoware_image_msgs::ImageObjTracked::ConstPtr& image_obj_tracked_msg) {
 //    ROS_INFO("image_obj_tracked: \t\t%d.%d", image_obj_tracked_msg->header.stamp.sec, image_obj_tracked_msg->header.stamp.nsec);
     image_obj_tracked_.push_front(image_obj_tracked_msg->header.stamp, get_walltime_now());
 }
@@ -308,17 +308,17 @@ void TimeManager::cluster_centroids_callback(const autoware_msgs::Centroids::Con
 }
 
 /* sync */
-void TimeManager::sync_image_obj_ranged_callback(const autoware_msgs::ImageObj::ConstPtr& sync_image_obj_msg) {
+void TimeManager::sync_image_obj_ranged_callback(const autoware_image_msgs::ImageObj::ConstPtr& sync_image_obj_msg) {
 //    ROS_INFO("sync_image_obj_ranged: \t\t%d.%d", sync_image_obj_msg->header.stamp.sec, sync_image_obj_msg->header.stamp.nsec);
     sync_image_obj_ranged_.push_front(sync_image_obj_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::sync_image_obj_tracked_callback(const autoware_msgs::ImageObjRanged::ConstPtr& sync_image_obj_ranged_msg) {
+void TimeManager::sync_image_obj_tracked_callback(const autoware_image_msgs::ImageObjRanged::ConstPtr& sync_image_obj_ranged_msg) {
 //    ROS_INFO("sync_image_obj_tracked: \t%d.%d", sync_image_obj_ranged_msg->header.stamp.sec, sync_image_obj_ranged_msg->header.stamp.nsec);
     sync_image_obj_tracked_.push_front(sync_image_obj_ranged_msg->header.stamp, get_walltime_now());
 }
 
-void TimeManager::sync_obj_label_callback(const autoware_msgs::ImageObjTracked::ConstPtr& sync_image_obj_tracked_msg) {
+void TimeManager::sync_obj_label_callback(const autoware_image_msgs::ImageObjTracked::ConstPtr& sync_image_obj_tracked_msg) {
 //    ROS_INFO("sync_obj_label: \t\t%d.%d", sync_image_obj_tracked_msg->header.stamp.sec, sync_image_obj_tracked_msg->header.stamp.nsec);
     sync_obj_label_.push_front(sync_image_obj_tracked_msg->header.stamp, get_walltime_now());
 }

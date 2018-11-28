@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8.12)
 project(points2image)
 
 include(FindPkgConfig)
+
+find_package(autoware_image_msgs REQUIRED)
+
 find_package(catkin REQUIRED COMPONENTS
         autoware_build_flags
         roscpp
@@ -36,6 +39,7 @@ catkin_package(
         std_msgs
         sensor_msgs
         autoware_msgs
+        autoware_image_msgs
         rosinterface
         fastvirtualscan
         cv_bridge
@@ -49,6 +53,7 @@ set(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 include_directories(
         include
         ${catkin_INCLUDE_DIRS}
+        ${autoware_image_msgs_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
 )

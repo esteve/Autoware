@@ -22,11 +22,7 @@ add_message_files(
             DetectedObject.msg
             DetectedObjectArray.msg
             ExtractedPosition.msg
-            ImageLaneObjects.msg
-            ImageObjects.msg
             LaneArray.msg
-            PointsImage.msg
-            ScanImage.msg
             Signals.msg
             TunedResult.msg
             ValueSet.msg
@@ -34,11 +30,6 @@ add_message_files(
             DTLane.msg
             GeometricRectangle.msg
             ICPStat.msg
-            ImageObj.msg
-            ImageObjRanged.msg
-            ImageObjTracked.msg
-            ImageRect.msg
-            ImageRectRanged.msg
             Lane.msg
             NDTStat.msg
             ObjLabel.msg

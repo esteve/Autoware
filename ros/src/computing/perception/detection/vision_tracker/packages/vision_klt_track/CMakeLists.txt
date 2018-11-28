@@ -5,12 +5,13 @@ set(ROS_VERSION $ENV{ROS_DISTRO})
 
 include(FindPkgConfig)
 
+find_package(autoware_image_msgs REQUIRED)
+
 FIND_PACKAGE(catkin REQUIRED COMPONENTS
         autoware_build_flags
         cv_bridge
         roscpp
         sensor_msgs
-        autoware_msgs
         )
 
 FIND_PACKAGE(OpenCV REQUIRED)
@@ -20,7 +21,7 @@ catkin_package(
         cv_bridge
         roscpp
         sensor_msgs
-        autoware_msgs
+        autoware_image_msgs
 )
 ###########
 ## Build ##
@@ -30,6 +31,7 @@ set(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 
 include_directories(
         ${catkin_INCLUDE_DIRS}
+        ${autoware_image_msgs_INCLUDE_DIRS}
         ${OPENCV_INCLUDE_DIRS}
         lib
         lib/lktracker

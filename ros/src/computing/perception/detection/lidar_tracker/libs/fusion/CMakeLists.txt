@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(fusion)
 
+find_package(autoware_image_msgs REQUIRED)
+
 find_package(catkin REQUIRED COMPONENTS
         autoware_build_flags
         roscpp
         cv_bridge
-        autoware_msgs
         )
 find_package(OpenCV REQUIRED)
 
 catkin_package(
         INCLUDE_DIRS include
         LIBRARIES fusion
-        CATKIN_DEPENDS roscpp autoware_msgs cv_bridge
+        CATKIN_DEPENDS roscpp autoware_image_msgs cv_bridge
 )
 
 SET(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
@@ -20,6 +21,7 @@ SET(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 include_directories(
         include
         ${catkin_INCLUDE_DIRS}
+        ${autoware_image_msgs_INCLUDE_DIRS}
 )
 
 add_library(fusion

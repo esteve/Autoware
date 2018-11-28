@@ -38,11 +38,11 @@
 #include <vector>
 
 #include <ros/ros.h>
-#include "autoware_msgs/ImageObj.h"
-#include "autoware_msgs/ImageRectRanged.h"
-#include "autoware_msgs/ScanImage.h"
-#include "autoware_msgs/PointsImage.h"
-#include "autoware_msgs/ImageObjTracked.h"
+#include "autoware_image_msgs/ImageObj.h"
+#include "autoware_image_msgs/ImageRectRanged.h"
+#include "autoware_image_msgs/ScanImage.h"
+#include "autoware_image_msgs/PointsImage.h"
+#include "autoware_image_msgs/ImageObjTracked.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -81,10 +81,10 @@ extern std::vector<float> getMaxHeights();
 extern void setParams(float minLowHeight, float maxLowHeight, float maxHeight, int minPoints, float disp);
 
 extern void calcDistance();
-extern void setDetectedObjects(const autoware_msgs::ImageObj& image_objects);
-extern void setScanImage(const autoware_msgs::ScanImage& scan_image);
-extern void setPointsImage(const autoware_msgs::PointsImage& points_image);
-extern std::vector<autoware_msgs::ImageRectRanged> getObjectsRectRanged();
+extern void setDetectedObjects(const autoware_image_msgs::ImageObj& image_objects);
+extern void setScanImage(const autoware_image_msgs::ScanImage& scan_image);
+extern void setPointsImage(const autoware_image_msgs::PointsImage& points_image);
+extern std::vector<autoware_image_msgs::ImageRectRanged> getObjectsRectRanged();
 extern std::string getObjectsType();
 extern void init();
 extern void destroy();

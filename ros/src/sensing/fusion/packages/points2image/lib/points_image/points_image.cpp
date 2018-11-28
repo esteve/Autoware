@@ -49,14 +49,14 @@ void initMatrix(const cv::Mat& cameraExtrinsicMat)
   init_matrix = true;
 }
 
-autoware_msgs::PointsImage pointcloud2_to_image(const sensor_msgs::PointCloud2ConstPtr& pointcloud2,
+autoware_image_msgs::PointsImage pointcloud2_to_image(const sensor_msgs::PointCloud2ConstPtr& pointcloud2,
                                                 const cv::Mat& cameraExtrinsicMat, const cv::Mat& cameraMat,
                                                 const cv::Mat& distCoeff, const cv::Size& imageSize)
 {
   int w = imageSize.width;
   int h = imageSize.height;
 
-  autoware_msgs::PointsImage msg;
+  autoware_image_msgs::PointsImage msg;
 
   msg.header = pointcloud2->header;
 

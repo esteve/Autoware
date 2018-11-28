@@ -53,7 +53,7 @@
 #include "cal_obj_loc.h"
 #include "calcoordinates.h"
 #include "structure.h"
-#include <autoware_msgs/ImageObjTracked.h>
+#include <autoware_image_msgs/ImageObjTracked.h>
 #include <autoware_msgs/ObjLabel.h>
 #include <autoware_msgs/ProjectionMatrix.h>
 #include <geometry_msgs/Pose.h>
@@ -316,7 +316,7 @@ void locatePublisher(void) {
 }
 
 static void
-obj_pos_xyzCallback(const autoware_msgs::ImageObjTracked &fused_objects) {
+obj_pos_xyzCallback(const autoware_image_msgs::ImageObjTracked &fused_objects) {
   if (!ready_)
     return;
   image_obj_tracked_time = fused_objects.header.stamp;
