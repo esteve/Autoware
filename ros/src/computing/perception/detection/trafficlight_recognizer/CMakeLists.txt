@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(trafficlight_recognizer)
 execute_process(
         COMMAND rosversion -d
@@ -65,6 +65,8 @@ include_directories(
 
 catkin_package(
         INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS}
+        DEPENDS
+        vector_map
         CATKIN_DEPENDS
         autoware_msgs
         cmake_modules
@@ -75,7 +77,6 @@ catkin_package(
         sensor_msgs
         std_msgs
         tf
-        vector_map
         vector_map_server
         visualization_msgs
         waypoint_follower

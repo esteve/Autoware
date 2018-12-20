@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(imm_ukf_pda_track)
 
 
@@ -17,12 +17,13 @@ find_package(catkin REQUIRED COMPONENTS
 set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
 
 catkin_package(
+  DEPENDS
+  vector_map
   CATKIN_DEPENDS
   roscpp
   pcl_ros
   autoware_msgs
   tf
-  vector_map
   )
 
 include_directories(

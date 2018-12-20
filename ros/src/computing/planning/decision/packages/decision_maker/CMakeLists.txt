@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(decision_maker)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -30,14 +30,16 @@ find_package(catkin REQUIRED COMPONENTS
         )
 
 catkin_package(
-        CATKIN_DEPENDS roscpp
+        DEPENDS
+        vector_map
+        CATKIN_DEPENDS
+        roscpp
         tf
         std_msgs
         autoware_config_msgs
         autoware_msgs
         geometry_msgs
         vector_map_msgs
-        vector_map
         jsk_recognition_msgs
         vector_map_msgs
         amathutils_lib

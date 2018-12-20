@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(road_occupancy_processor)
 
 
@@ -24,7 +24,10 @@ find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
 find_package(OpenMP)
 
-catkin_package(CATKIN_DEPENDS
+catkin_package(
+    DEPENDS
+    vector_map
+    CATKIN_DEPENDS
     roscpp
     tf
     sensor_msgs
@@ -34,7 +37,6 @@ catkin_package(CATKIN_DEPENDS
     grid_map_ros
     grid_map_cv
     grid_map_msgs
-    vector_map
 )
 
 set(CMAKE_CXX_FLAGS "-O3 -g -Wall ${CMAKE_CXX_FLAGS}")

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(obj_fusion)
 
 
@@ -17,12 +17,13 @@ find_package(catkin REQUIRED COMPONENTS
 
 set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
 catkin_package(
-  CATKIN_DEPENDS 
+  DEPENDS
+  vector_map
+  CATKIN_DEPENDS
   roscpp
   autoware_msgs
   tf
   jsk_recognition_msgs
-  vector_map
   vector_map_server
 )
 
@@ -33,7 +34,7 @@ include_directories(
 )
 
 #Object Fusion
-add_executable(obj_fusion 
+add_executable(obj_fusion
   nodes/obj_fusion/obj_fusion.cpp
   )
 

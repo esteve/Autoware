@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(waypoint_maker)
 
 
@@ -21,14 +21,16 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED)
 
 catkin_package(
-        CATKIN_DEPENDS gnss
+        DEPENDS
+        vector_map
+        CATKIN_DEPENDS
+        gnss
         roscpp
         std_msgs
         geometry_msgs
         nav_msgs
         tf
         waypoint_follower
-        vector_map
         lane_planner
         autoware_msgs
 )
