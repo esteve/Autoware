@@ -16,14 +16,64 @@ variables:
     - apt-get install -y lsb-release
     - apt-get install -y gcc g++
     - sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
+    - sh -c "echo \"deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros2-latest.list"
     - apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
     - apt-get update
     - apt-get install -y dpkg
     - apt-get install -y python-catkin-pkg python-rosdep python-wstool ros-${ROS_DISTRO}-catkin
     - apt-get install -y python3-pip python3-setuptools
+    - |
+      apt-get install -y \
+      ros-ardent-ament-clang-format \
+      ros-ardent-ament-cmake \
+      ros-ardent-ament-cmake-auto \
+      ros-ardent-ament-cmake-clang-format \
+      ros-ardent-ament-cmake-copyright \
+      ros-ardent-ament-cmake-core \
+      ros-ardent-ament-cmake-cppcheck \
+      ros-ardent-ament-cmake-cpplint \
+      ros-ardent-ament-cmake-export-definitions \
+      ros-ardent-ament-cmake-export-dependencies \
+      ros-ardent-ament-cmake-export-include-directories \
+      ros-ardent-ament-cmake-export-interfaces \
+      ros-ardent-ament-cmake-export-libraries \
+      ros-ardent-ament-cmake-export-link-flags \
+      ros-ardent-ament-cmake-flake8 \
+      ros-ardent-ament-cmake-gmock \
+      ros-ardent-ament-cmake-gtest \
+      ros-ardent-ament-cmake-include-directories \
+      ros-ardent-ament-cmake-libraries \
+      ros-ardent-ament-cmake-lint-cmake \
+      ros-ardent-ament-cmake-nose \
+      ros-ardent-ament-cmake-pep257 \
+      ros-ardent-ament-cmake-pep8 \
+      ros-ardent-ament-cmake-pyflakes \
+      ros-ardent-ament-cmake-pytest \
+      ros-ardent-ament-cmake-python \
+      ros-ardent-ament-cmake-ros \
+      ros-ardent-ament-cmake-target-dependencies \
+      ros-ardent-ament-cmake-test \
+      ros-ardent-ament-cmake-uncrustify \
+      ros-ardent-ament-copyright \
+      ros-ardent-ament-cppcheck \
+      ros-ardent-ament-cpplint \
+      ros-ardent-ament-flake8 \
+      ros-ardent-ament-index-cpp \
+      ros-ardent-ament-index-python \
+      ros-ardent-ament-lint-auto \
+      ros-ardent-ament-lint-cmake \
+      ros-ardent-ament-lint-common \
+      ros-ardent-ament-package \
+      ros-ardent-ament-pep257 \
+      ros-ardent-ament-pep8 \
+      ros-ardent-ament-pyflakes \
+      ros-ardent-ament-tools \
+      ros-ardent-ament-uncrustify
+
     # Update setuptools from PyPI because the version Ubuntu ships with is too old
     - pip3 install -U setuptools
     - source /opt/ros/${ROS_DISTRO}/setup.bash
+    - source /opt/ros/${ROS2_DISTRO}/setup.bash
     - rosdep init
     - rosdep update
     - cd ros/src
@@ -31,7 +81,8 @@ variables:
     - test -f "${ROSINSTALL_FILE}" && wstool merge "${ROSINSTALL_FILE}"
     - wstool up
     - cd ..
-    - rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} 
+    # Ignore ament dependencies for now
+    - rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} --skip-keys="ament_lint_common ament_lint_auto ament_cmake_gtest ament_cmake ament_cmake_lint_cmake"
     
 
 build_kinetic:
@@ -39,6 +90,7 @@ build_kinetic:
   image: ubuntu:xenial
   variables:
     ROS_DISTRO: kinetic
+    ROS2_DISTRO: ardent
   <<: *build_common
   script:
   # colcon as a Debian package is only available in Kinetic and up
@@ -51,7 +103,7 @@ build_kinetic:
     - cd ..
     - rm -r lcov
   # We first build the entire workspace normally
-    - colcon build --cmake-args -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage" -DCMAKE_BUILD_TYPE=Debug
+    - colcon build --cmake-args -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage" -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=/usr/bin/python3
   # And then build the tests target. catkin (ROS1) packages add their tests to the tests target
   # which is not the standard target for CMake projects. We need to trigger the tests target so that
   # tests are built and any fixtures are set up.
@@ -84,7 +136,7 @@ build_cross:
     - docker:dind
   variables:
     ROS_DISTRO: kinetic
-    AUTOWARE_DOCKER_DATE: 20190102
+    AUTOWARE_DOCKER_DATE: 20190103
     AUTOWARE_HOME: $CI_PROJECT_DIR
     AUTOWARE_TARGET_ARCH: aarch64
     AUTOWARE_TARGET_PLATFORM: generic-aarch64
@@ -93,7 +145,6 @@ build_cross:
     AUTOWARE_TOOLCHAIN_FILE_PATH: $CI_PROJECT_DIR/ros/cross_toolchain.cmake
     AUTOWARE_SYSROOT: /sysroot/${AUTOWARE_TARGET_PLATFORM}
   script:
-    # - ${AUTOWARE_HOME}/docker/crossbuild/build_cross_image.sh
     - 'docker run
           -e AUTOWARE_SYSROOT=${AUTOWARE_SYSROOT}
           --rm
@@ -103,6 +154,7 @@ build_cross:
           bash
             -c "
                 source ${AUTOWARE_SYSROOT}/opt/ros/kinetic/setup.bash &&
+                source ${AUTOWARE_SYSROOT}/opt/ros/ardent/setup.bash &&
                 colcon build
                     --merge-install
                     --build-base ${AUTOWARE_BUILD_PATH}
@@ -110,8 +162,8 @@ build_cross:
                     --cmake-args
                     -DCMAKE_TOOLCHAIN_FILE=${AUTOWARE_TOOLCHAIN_FILE_PATH}
                     -DCMAKE_SYSTEM_PROCESSOR=${AUTOWARE_TARGET_ARCH}
-                    -DCMAKE_PREFIX_PATH=\"${AUTOWARE_SYSROOT}/opt/ros/kinetic;${AUTOWARE_INSTALL_PATH}\"
                     -DCMAKE_FIND_ROOT_PATH=${AUTOWARE_INSTALL_PATH}
+                    -DPYTHON_EXECUTABLE=/usr/bin/python3
                   "
                   '
   retry: 1
@@ -132,5 +184,3 @@ pages:
   only:
     - master
     - develop
-
-
