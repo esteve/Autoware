@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(lattice_planner)
 
 
@@ -31,9 +31,14 @@ ENDIF ()
 
 
 catkin_package(
-        INCLUDE_DIRS include
-        LIBRARIES libtraj_gen
-        CATKIN_DEPENDS roscpp
+        INCLUDE_DIRS
+        include
+        LIBRARIES
+        libtraj_gen
+        DEPENDS
+        vector_map
+        CATKIN_DEPENDS
+        roscpp
         std_msgs
         pcl_ros
         pcl_conversions
@@ -41,7 +46,6 @@ catkin_package(
         tf
         gnss
         waypoint_follower
-        vector_map
         astar_planner
         autoware_can_msgs
 )

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(map_file)
 
 include(FindPkgConfig)
@@ -40,8 +40,7 @@ find_package(CURL REQUIRED)
 
 set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
 
-catkin_package(
-)
+catkin_package()
 
 ###########
 ## Build ##

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(lane_planner)
 
 
@@ -18,13 +18,17 @@ find_package(catkin REQUIRED COMPONENTS
 set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
 
 catkin_package(
-        INCLUDE_DIRS include
-        LIBRARIES lane_planner
-        CATKIN_DEPENDS roscpp
+        INCLUDE_DIRS
+        include
+        LIBRARIES
+        lane_planner
+        DEPENDS
+        vector_map
+        CATKIN_DEPENDS
+        roscpp
         std_msgs
         tablet_socket
         waypoint_follower
-        vector_map
         gnss
         autoware_msgs
 )

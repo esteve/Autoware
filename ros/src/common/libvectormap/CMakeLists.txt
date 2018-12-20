@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(libvectormap)
 
 
@@ -29,9 +29,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-        INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
-        LIBRARIES libvectormap
-        CATKIN_DEPENDS vector_map
+        INCLUDE_DIRS
+        include
+        ${EIGEN3_INCLUDE_DIRS}
+        LIBRARIES
+        libvectormap
+        DEPENDS
+        vector_map
 )
 
 include_directories(

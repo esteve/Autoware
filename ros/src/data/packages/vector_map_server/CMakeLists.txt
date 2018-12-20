@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(vector_map_server)
 
 
@@ -57,7 +57,14 @@ generate_messages(
 )
 
 catkin_package(
-        CATKIN_DEPENDS message_runtime roscpp geometry_msgs autoware_msgs vector_map_msgs vector_map
+        DEPENDS
+        vector_map
+        CATKIN_DEPENDS
+        message_runtime
+        roscpp
+        geometry_msgs
+        autoware_msgs
+        vector_map_msgs
 )
 
 include_directories(

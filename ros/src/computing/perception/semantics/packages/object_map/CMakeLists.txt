@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 
 project(object_map)
 
@@ -31,7 +31,16 @@ if (OPENMP_FOUND)
 endif ()
 
 catkin_package(
-        CATKIN_DEPENDS roscpp pcl_ros pcl_conversions tf sensor_msgs nav_msgs autoware_msgs vector_map
+  DEPENDS
+  vector_map
+  CATKIN_DEPENDS
+  roscpp
+  pcl_ros
+  pcl_conversions
+  tf
+  sensor_msgs
+  nav_msgs
+  autoware_msgs
 )
 
 set(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
