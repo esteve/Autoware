@@ -35,13 +35,13 @@
   <!-- Use build_depend for packages you need at compile time: -->
   <!--   <build_depend>message_generation</build_depend> -->
   <!-- Use buildtool_depend for build tool packages: -->
-  <!--   <buildtool_depend>catkin</buildtool_depend>
+  <!--   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_build_flags</buildtool_depend> -->
   <!-- Use exec_depend for packages you need at runtime: -->
   <!--   <exec_depend>message_runtime</exec_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_build_flags</buildtool_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>vector_map_msgs</build_depend>
@@ -74,6 +74,7 @@
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
+    <build_type>ament_cmake</build_type>
     <!-- Other tools can request additional information be placed here -->
 
   </export>

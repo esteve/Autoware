@@ -13,7 +13,7 @@
 
   <url type="website">http://wiki.ros.org/sick_ldmrs_tools</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>libpcl-all-dev</depend>
   <depend>message_filters</depend>

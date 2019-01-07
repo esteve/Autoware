@@ -8,7 +8,7 @@
   <license>BSD</license>
   <author email="yuki@ertl.jp">Yuki Kitsukawa</author> -->
   
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_build_flags</buildtool_depend>
   
   <build_depend>nmea_msgs</build_depend>
@@ -20,5 +20,6 @@
   <exec_depend>sensor_msgs</exec_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

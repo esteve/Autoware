@@ -18,7 +18,7 @@
     <author email="mosfet@email.arizona.edu">Matt Bunting</author>
     <author>Sean Whitsitt</author>
 
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
     <buildtool_depend>autoware_build_flags</buildtool_depend>
 
     <build_depend>controller_manager</build_depend>

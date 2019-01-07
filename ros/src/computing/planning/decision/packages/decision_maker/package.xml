@@ -7,7 +7,7 @@
     <author email="yusuke.fujii@tier4.jp">Yusuke Fujii</author>
 
     <license>BSD</license>
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
     <buildtool_depend>autoware_build_flags</buildtool_depend>
     <build_depend>roscpp</build_depend>
     <build_depend>std_msgs</build_depend>
@@ -36,5 +36,6 @@
     <exec_depend>state_machine_lib</exec_depend>
 
     <export>
+    <build_type>ament_cmake</build_type>
     </export>
 </package>

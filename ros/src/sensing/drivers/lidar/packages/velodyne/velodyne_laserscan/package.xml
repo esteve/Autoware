@@ -14,7 +14,7 @@
   <url type="repository">https://github.com/ros-drivers/velodyne</url>
   <url type="bugtracker">https://github.com/ros-drivers/velodyne/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>roscpp</depend>
   <depend>nodelet</depend>
@@ -25,6 +25,7 @@
   <test_depend>rostest</test_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
     <nodelet plugin="${prefix}/nodelets.xml" />
   </export>
 

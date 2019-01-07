@@ -7,7 +7,7 @@
     <maintainer email="abrahammonrroy@yahoo.com">amc</maintainer>
     <license>BSD</license>
 
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
     <buildtool_depend>autoware_build_flags</buildtool_depend>
 
     <build_depend>pcl_ros</build_depend>
@@ -34,5 +34,6 @@
     <exec_depend>grid_map_cv</exec_depend>
     <exec_depend>grid_map_msgs</exec_depend>
 
-    <export></export>
+    <export>
+    <build_type>ament_cmake</build_type></export>
 </package>

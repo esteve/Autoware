@@ -10,7 +10,7 @@
 
   <author email="aohsato@gmail.com">Akihito Ohsato</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_build_flags</buildtool_depend>
 
   <build_depend>roscpp</build_depend>
@@ -30,6 +30,7 @@
   <exec_depend>autoware_msgs</exec_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
   </export>
 
 </package>

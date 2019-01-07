@@ -5,7 +5,7 @@
   <description>The pacmod interface package</description>
   <maintainer email="antm678@ertl.jp">T.Ando</maintainer>
   <license>BSD</license>
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_build_flags</buildtool_depend>
 
   <build_depend>roscpp</build_depend>
@@ -21,6 +21,7 @@
   <exec_depend>dbw_mkz_msgs</exec_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
   </export>
 
 </package>

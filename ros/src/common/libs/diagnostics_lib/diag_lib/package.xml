@@ -9,7 +9,7 @@
 
   <author email="masaya.kataoka@tier4.jp">Masaya Kataoka</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>autoware_build_flags</buildtool_depend>
   <build_depend>diag_msgs</build_depend>
   <build_depend>roscpp</build_depend>
@@ -20,5 +20,6 @@
   <exec_depend>roscpp</exec_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

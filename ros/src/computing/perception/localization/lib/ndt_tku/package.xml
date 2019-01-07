@@ -5,7 +5,7 @@
     <description>The ndt_tku package</description>
     <maintainer email="yuki@ertl.jp">Yuki Kitsukawa</maintainer>
     <license>BSD</license>
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
     <build_depend>glut</build_depend>
     <build_depend>libxmu-dev</build_depend>
     <build_depend>libxi-dev</build_depend>
@@ -14,5 +14,6 @@
     <exec_depend>libxmu-dev</exec_depend>
     <exec_depend>libxi-dev</exec_depend>
     <export>
+    <build_type>ament_cmake</build_type>
     </export>
 </package>
